@@ -39,6 +39,10 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        env:
+          AUTH_DATABASE_DIRECT_URL: postgresql://localhost:5432/gamebook
       - name: Run lint
         run: pnpm lint
       - name: Run unit tests
