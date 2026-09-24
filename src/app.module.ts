@@ -6,12 +6,14 @@ import { ApiExceptionFilter } from './api/http/api-exception.filter.js';
 import { RequestIdMiddleware } from './api/http/request-id.js';
 import { RequestLoggingMiddleware } from './api/http/request-logging.middleware.js';
 import { createValidationPipe } from './api/http/validation-pipe.js';
+import { PrismaService } from './infrastructure/persistence/prisma/prisma-service.js';
 
 @Module({
   imports: [],
   controllers: [AppController],
   providers: [
     AppService,
+    PrismaService,
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_PIPE, useFactory: createValidationPipe },
   ],
