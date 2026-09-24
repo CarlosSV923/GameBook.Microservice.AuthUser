@@ -1,5 +1,6 @@
 import type { PrismaClient } from '../../../../src/infrastructure/persistence/prisma/generated/client.js';
 import { EmailAddress } from '../../../../src/domain/users/email-address.js';
+import { EmailAlreadyRegisteredError } from '../../../../src/domain/users/email-already-registered-error.js';
 import { User } from '../../../../src/domain/users/user.js';
 import { PrismaUserRepository } from '../../../../src/infrastructure/persistence/prisma/prisma-user-repository.js';
 
@@ -63,5 +64,13 @@ describe('PrismaUserRepository', () => {
     await expect(
       repository.replacePassword(user.id, 'scrypt$new', user.sessionVersion),
     ).resolves.toBe(false);
+  });
+
+  it('maps a database unique constraint to the public duplicate error', async () => {
+    userDelegate.create.mockRejectedValue({ code: 'P2002' });
+
+    await expect(repository.save(user)).rejects.toBeInstanceOf(
+      EmailAlreadyRegisteredError,
+    );
   });
 });
