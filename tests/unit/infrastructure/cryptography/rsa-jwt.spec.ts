@@ -1,6 +1,7 @@
 import {
   derivePublicKey,
   generateDevelopmentKeyPair,
+  JwtExpiredError,
   RsaJwtSigner,
   RsaJwtVerifier,
 } from '../../../../src/infrastructure/cryptography/rsa-jwt.js';
@@ -48,8 +49,8 @@ describe('RS256 JWT adapters', () => {
     await expect(verifier.verify(`${token}tampered`)).rejects.toThrow(
       'JWT verification failed',
     );
-    await expect(verifier.verify(token)).rejects.toThrow(
-      'JWT verification failed',
+    await expect(verifier.verify(token)).rejects.toBeInstanceOf(
+      JwtExpiredError,
     );
     await expect(
       new RsaJwtVerifier(
