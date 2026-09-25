@@ -34,7 +34,7 @@ pnpm install --frozen-lockfile
 pnpm db:generate
 ```
 
-Create a private, ignored `.env` file. The variable names are listed without values:
+Copy `.env.example` to a private, ignored `.env` file and fill only the local values. The template lists the variable names without values:
 
 ```dotenv
 AUTH_DATABASE_URL=
@@ -45,7 +45,7 @@ CORS_ALLOWED_ORIGINS=
 PORT=
 ```
 
-`AUTH_DATABASE_DIRECT_URL` is required only by Prisma migration commands and must remain outside runtime environment files. PEM values may use literal `\n` escapes; the service normalizes them before parsing. Never commit environment files, private keys, or database credentials.
+The template also lists `AUTH_DATABASE_DIRECT_URL` as a migration-only variable. Provide it privately only when running Prisma migration commands; it is not a runtime or deployment credential. PEM values may use literal `\n` escapes; the service normalizes them before parsing. Never commit `.env` files, private keys, or database credentials.
 
 Start AuthUser individually:
 

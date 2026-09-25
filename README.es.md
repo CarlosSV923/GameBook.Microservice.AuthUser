@@ -34,7 +34,7 @@ pnpm install --frozen-lockfile
 pnpm db:generate
 ```
 
-Crea un archivo `.env` privado e ignorado por Git. Los nombres de variables se muestran sin valores:
+Copia `.env.example` a un archivo `.env` privado e ignorado por Git y completa solo los valores locales. La plantilla muestra los nombres de variables sin valores:
 
 ```dotenv
 AUTH_DATABASE_URL=
@@ -45,7 +45,7 @@ CORS_ALLOWED_ORIGINS=
 PORT=
 ```
 
-`AUTH_DATABASE_DIRECT_URL` solo es necesaria para comandos de migración Prisma y debe mantenerse fuera de los archivos de runtime. Los valores PEM pueden usar escapes literales `\n`; el servicio los normaliza antes de analizarlos. Nunca confirmes archivos de entorno, claves privadas ni credenciales de base de datos.
+La plantilla también muestra `AUTH_DATABASE_DIRECT_URL` como variable exclusiva de migración. Proporciónala de forma privada solo al ejecutar comandos de migración Prisma; no es una credencial de runtime ni de despliegue. Los valores PEM pueden usar escapes literales `\n`; el servicio los normaliza antes de analizarlos. Nunca confirmes archivos `.env`, claves privadas ni credenciales de base de datos.
 
 Inicia AuthUser de forma individual:
 
