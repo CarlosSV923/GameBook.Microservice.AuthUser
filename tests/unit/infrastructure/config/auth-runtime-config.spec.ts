@@ -1,7 +1,7 @@
 import { generateDevelopmentKeyPair } from '../../../../src/infrastructure/cryptography/rsa-jwt.js';
-import { loadAuthRuntimeConfig } from '../../../../src/infrastructure/config/auth-runtime-config.js';
+import { validateAuthConfiguration } from '../../../../src/infrastructure/config/auth-runtime-config.js';
 
-describe('loadAuthRuntimeConfig', () => {
+describe('validateAuthConfiguration', () => {
   it('loads runtime values and restores escaped PEM newlines', () => {
     const { privateKey } = generateDevelopmentKeyPair();
     const environment = {
@@ -11,21 +11,21 @@ describe('loadAuthRuntimeConfig', () => {
       JWT_AUDIENCE: 'gamebook-local',
     };
 
-    expect(loadAuthRuntimeConfig(environment)).toEqual({
-      databaseUrl: environment.AUTH_DATABASE_URL,
-      jwtPrivateKey: privateKey.trim(),
-      jwtIssuer: environment.JWT_ISSUER,
-      jwtAudience: environment.JWT_AUDIENCE,
+    expect(validateAuthConfiguration(environment)).toMatchObject({
+      AUTH_DATABASE_URL: environment.AUTH_DATABASE_URL,
+      JWT_PRIVATE_KEY: privateKey.trim(),
+      JWT_ISSUER: environment.JWT_ISSUER,
+      JWT_AUDIENCE: environment.JWT_AUDIENCE,
     });
   });
 
   it('fails closed when a required value is missing', () => {
-    expect(() => loadAuthRuntimeConfig({})).toThrow('AUTH_DATABASE_URL');
+    expect(() => validateAuthConfiguration({})).toThrow('AUTH_DATABASE_URL');
   });
 
   it('rejects an invalid private key instead of deferring the failure', () => {
     expect(() =>
-      loadAuthRuntimeConfig({
+      validateAuthConfiguration({
         AUTH_DATABASE_URL:
           'postgresql://auth-app:secret@localhost:5432/gamebook',
         JWT_PRIVATE_KEY: 'not-a-private-key',

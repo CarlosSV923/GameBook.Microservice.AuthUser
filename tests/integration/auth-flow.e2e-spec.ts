@@ -1,18 +1,20 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module.js';
 import { configureHttpApplication } from '../../src/api/http/configure-http-application.js';
-import { USER_REPOSITORY } from '../../src/application/ports/dependency-tokens.js';
+import {
+  JWT_SIGNER,
+  USER_REPOSITORY,
+} from '../../src/application/ports/dependency-tokens.js';
+import type { JwtSigner } from '../../src/application/ports/jwt-ports.js';
 import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.js';
 import type { EmailAddress } from '../../src/domain/users/email-address.js';
 import type { UserRepository } from '../../src/domain/users/user-repository.js';
 import { User } from '../../src/domain/users/user.js';
-import {
-  generateDevelopmentKeyPair,
-  RsaJwtSigner,
-} from '../../src/infrastructure/cryptography/rsa-jwt.js';
+import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.js';
 
 class InMemoryUserRepository implements UserRepository {
   private readonly users = new Map<string, User>();
@@ -150,13 +152,14 @@ describe('AuthUser real HTTP flow', () => {
       });
 
     const now = Math.floor(Date.now() / 1000);
-    const expiredToken = await new RsaJwtSigner(testKeyPair.privateKey).sign({
+    const config = app.get(ConfigService);
+    const expiredToken = await app.get<JwtSigner>(JWT_SIGNER).sign({
       sub: user.id,
       ver: 1,
       iat: now - 7200,
       exp: now - 1,
-      iss: 'gamebook-authuser-test',
-      aud: 'gamebook-test',
+      iss: config.getOrThrow<string>('JWT_ISSUER'),
+      aud: config.getOrThrow<string>('JWT_AUDIENCE'),
     });
 
     await request(app.getHttpServer())

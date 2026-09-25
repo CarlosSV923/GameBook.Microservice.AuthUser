@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ApiExceptionFilter } from './api/http/api-exception.filter.js';
 import { RequestIdMiddleware } from './api/http/request-id.js';
@@ -33,10 +34,18 @@ import {
   RsaJwtSigner,
   RsaJwtVerifier,
 } from './infrastructure/cryptography/rsa-jwt.js';
-import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-config.js';
+import {
+  validateAuthConfiguration,
+  type AuthEnvironment,
+} from './infrastructure/config/auth-runtime-config.js';
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate: validateAuthConfiguration,
+    }),
+  ],
   controllers: [
     RegisterUserController,
     LoginUserController,
@@ -52,19 +61,23 @@ import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-conf
     },
     {
       provide: JWT_SIGNER,
-      useFactory: (): JwtSigner =>
-        new RsaJwtSigner(loadAuthRuntimeConfig().jwtPrivateKey),
+      useFactory: (config: ConfigService<AuthEnvironment, true>): JwtSigner =>
+        new RsaJwtSigner(config.getOrThrow<string>('JWT_PRIVATE_KEY')),
+      inject: [ConfigService],
     },
     {
       provide: JWT_VERIFIER,
-      useFactory: (): JwtVerifier => {
-        const configuration = loadAuthRuntimeConfig();
+      useFactory: (
+        config: ConfigService<AuthEnvironment, true>,
+      ): JwtVerifier => {
+        const privateKey = config.getOrThrow<string>('JWT_PRIVATE_KEY');
         return new RsaJwtVerifier(
-          derivePublicKey(configuration.jwtPrivateKey),
-          configuration.jwtIssuer,
-          configuration.jwtAudience,
+          derivePublicKey(privateKey),
+          config.getOrThrow<string>('JWT_ISSUER'),
+          config.getOrThrow<string>('JWT_AUDIENCE'),
         );
       },
+      inject: [ConfigService],
     },
     {
       provide: USER_REPOSITORY,
@@ -86,17 +99,17 @@ import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-conf
         userRepository: UserRepository,
         passwordHasher: PasswordHasher,
         jwtSigner: JwtSigner,
+        config: ConfigService<AuthEnvironment, true>,
       ) => {
-        const configuration = loadAuthRuntimeConfig();
         return new LoginUserUseCase(
           userRepository,
           passwordHasher,
           jwtSigner,
-          configuration.jwtIssuer,
-          configuration.jwtAudience,
+          config.getOrThrow<string>('JWT_ISSUER'),
+          config.getOrThrow<string>('JWT_AUDIENCE'),
         );
       },
-      inject: [USER_REPOSITORY, PASSWORD_HASHER, JWT_SIGNER],
+      inject: [USER_REPOSITORY, PASSWORD_HASHER, JWT_SIGNER, ConfigService],
     },
     {
       provide: VALIDATE_SESSION_USE_CASE,
