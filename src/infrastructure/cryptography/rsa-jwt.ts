@@ -11,6 +11,12 @@ import type {
   JwtSigner,
   JwtVerifier,
 } from '../../application/ports/jwt-ports.js';
+import {
+  JwtExpiredError,
+  JwtVerificationError,
+} from '../../application/ports/jwt-ports.js';
+
+export { JwtExpiredError, JwtVerificationError };
 
 const JWT_HEADER = { alg: 'RS256', typ: 'JWT' } as const;
 const UUID_PATTERN =
@@ -50,10 +56,11 @@ export class RsaJwtVerifier implements JwtVerifier {
   }
 
   verify(token: string): Promise<JwtClaims> {
-    const [encodedHeader, encodedPayload, encodedSignature] = token.split('.');
-    if (!encodedHeader || !encodedPayload || !encodedSignature) {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
       return Promise.reject(new JwtVerificationError());
     }
+    const [encodedHeader, encodedPayload, encodedSignature] = parts;
 
     let header: unknown;
     let claims: unknown;
@@ -80,7 +87,11 @@ export class RsaJwtVerifier implements JwtVerifier {
 
     try {
       return Promise.resolve(this.assertClaims(claims));
-    } catch {
+    } catch (error) {
+      if (error instanceof JwtExpiredError) {
+        return Promise.reject(error);
+      }
+
       return Promise.reject(new JwtVerificationError());
     }
   }
@@ -97,21 +108,17 @@ export class RsaJwtVerifier implements JwtVerifier {
       !isPositiveInteger(ver) ||
       !isNonNegativeInteger(iat) ||
       !isNonNegativeInteger(exp) ||
-      exp <= this.now() ||
       iss !== this.issuer ||
       aud !== this.audience
     ) {
       throw new Error('Invalid JWT claims.');
     }
 
-    return { sub, ver, iat, exp, iss, aud };
-  }
-}
+    if (exp <= this.now()) {
+      throw new JwtExpiredError();
+    }
 
-export class JwtVerificationError extends Error {
-  constructor() {
-    super('JWT verification failed.');
-    this.name = 'JwtVerificationError';
+    return { sub, ver, iat, exp, iss, aud };
   }
 }
 

@@ -14,3 +14,17 @@ export interface JwtSigner {
 export interface JwtVerifier {
   verify(token: string): Promise<JwtClaims>;
 }
+
+export class JwtVerificationError extends Error {
+  constructor() {
+    super('JWT verification failed.');
+    this.name = 'JwtVerificationError';
+  }
+}
+
+export class JwtExpiredError extends JwtVerificationError {
+  constructor() {
+    super();
+    this.name = 'JwtExpiredError';
+  }
+}
