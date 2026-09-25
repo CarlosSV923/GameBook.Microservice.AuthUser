@@ -1,7 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { ApiExceptionFilter } from './api/http/api-exception.filter.js';
 import { RequestIdMiddleware } from './api/http/request-id.js';
 import { RequestLoggingMiddleware } from './api/http/request-logging.middleware.js';
@@ -28,9 +26,8 @@ import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-conf
 
 @Module({
   imports: [],
-  controllers: [AppController, RegisterUserController, LoginUserController],
+  controllers: [RegisterUserController, LoginUserController],
   providers: [
-    AppService,
     PrismaService,
     ScryptPasswordHasher,
     {
