@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -11,6 +11,7 @@ import {
 const trimString = ({ value }: { value: unknown }): unknown =>
   typeof value === 'string' ? value.trim() : value;
 
+@ApiSchema({ name: 'RegisterRequest' })
 export class RegisterUserRequest {
   @ApiProperty({ example: 'Ada Lovelace', maxLength: 120 })
   @Transform(trimString)
@@ -19,7 +20,11 @@ export class RegisterUserRequest {
   @MaxLength(120)
   fullName!: string;
 
-  @ApiProperty({ example: 'ada.lovelace@example.test', maxLength: 254 })
+  @ApiProperty({
+    example: 'ada.lovelace@example.test',
+    format: 'email',
+    maxLength: 254,
+  })
   @Transform(trimString)
   @IsEmail()
   @MaxLength(254)

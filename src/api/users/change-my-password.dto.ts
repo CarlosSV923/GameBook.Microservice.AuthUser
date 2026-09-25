@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiSchema } from '@nestjs/swagger';
 
+@ApiSchema({ name: 'ChangePasswordRequest' })
 export class ChangeMyPasswordRequest {
   @ApiProperty({
     description: 'Current password; it is never logged or returned.',

@@ -27,8 +27,17 @@ export function configureSwagger(application: INestApplication): void {
     )
     .build();
 
-  const documentFactory = () =>
-    SwaggerModule.createDocument(application, configuration);
+  const documentFactory = () => {
+    const document = SwaggerModule.createDocument(application, configuration);
+
+    for (const schema of Object.values(document.components?.schemas ?? {})) {
+      if ('type' in schema && schema.type === 'object') {
+        schema.additionalProperties = false;
+      }
+    }
+
+    return document;
+  };
 
   SwaggerModule.setup(SWAGGER_UI_PATH, application, documentFactory, {
     jsonDocumentUrl: SWAGGER_JSON_PATH,

@@ -17,8 +17,8 @@ export class ErrorResponseModel {
   @ApiProperty({ example: 'Request validation failed.' })
   message!: string;
 
-  @ApiProperty({ example: 'req_gb007_fictitious' })
-  requestId!: string;
+  @ApiPropertyOptional({ example: 'req_gb007_fictitious' })
+  requestId?: string;
 
   @ApiPropertyOptional({ type: [ErrorDetailModel] })
   details?: ErrorDetailModel[];
@@ -50,10 +50,15 @@ export class LoginResponseModel extends UserResponseModel {
   @ApiProperty({ example: 'fictional.jwt.token' })
   accessToken!: string;
 
-  @ApiProperty({ example: 'Bearer' })
+  @ApiProperty({ enum: ['Bearer'], example: 'Bearer' })
   tokenType!: string;
 
-  @ApiProperty({ example: 3600 })
+  @ApiProperty({
+    enum: [3600],
+    example: 3600,
+    format: 'int32',
+    type: 'integer',
+  })
   expiresIn!: number;
 }
 
