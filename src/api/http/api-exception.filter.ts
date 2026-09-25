@@ -72,6 +72,18 @@ function readPublicCode(value: unknown): string | undefined {
   return Object.hasOwn(publicMessages, value.code) ? value.code : undefined;
 }
 
+function readPublicMessage(value: unknown, code: string): string | undefined {
+  if (
+    code !== 'INVALID_CREDENTIALS' ||
+    !isRecord(value) ||
+    value.message !== 'Invalid credentials.'
+  ) {
+    return undefined;
+  }
+
+  return value.message;
+}
+
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -92,12 +104,16 @@ export class ApiExceptionFilter implements ExceptionFilter {
       readPublicCode(exceptionResponse) ??
       statusCodes[status] ??
       'INTERNAL_ERROR';
+    const message =
+      readPublicMessage(exceptionResponse, code) ??
+      publicMessages[code] ??
+      publicMessages.INTERNAL_ERROR;
     const details = isRecord(exceptionResponse)
       ? readDetails(exceptionResponse.details)
       : undefined;
     const payload: ErrorResponse = {
       code,
-      message: publicMessages[code] ?? publicMessages.INTERNAL_ERROR,
+      message,
       requestId,
     };
 

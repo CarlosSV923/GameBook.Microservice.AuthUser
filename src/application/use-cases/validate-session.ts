@@ -4,6 +4,7 @@ import {
   type JwtVerifier,
 } from '../ports/jwt-ports.js';
 import type { UserRepository } from '../../domain/users/user-repository.js';
+import type { User } from '../../domain/users/user.js';
 
 export type SessionValidationErrorCode =
   'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'SESSION_REVOKED';
@@ -14,6 +15,11 @@ export interface ValidateSessionOutput {
     readonly fullName: string;
     readonly email: string;
   };
+}
+
+export interface AuthenticatedSession {
+  readonly user: User;
+  readonly claims: JwtClaims;
 }
 
 export class SessionValidationError extends Error {
@@ -30,6 +36,18 @@ export class ValidateSessionUseCase {
   ) {}
 
   async execute(token: string): Promise<ValidateSessionOutput> {
+    const { user } = await this.validate(token);
+
+    return {
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+      },
+    };
+  }
+
+  async validate(token: string): Promise<AuthenticatedSession> {
     let claims: JwtClaims;
     try {
       claims = await this.jwtVerifier.verify(token);
@@ -47,11 +65,8 @@ export class ValidateSessionUseCase {
     }
 
     return {
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-      },
+      user,
+      claims,
     };
   }
 }
