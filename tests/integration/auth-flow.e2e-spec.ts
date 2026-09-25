@@ -3,7 +3,6 @@ import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { AppModule } from '../../src/app.module.js';
 import { configureHttpApplication } from '../../src/api/http/configure-http-application.js';
 import {
   JWT_SIGNER,
@@ -76,6 +75,7 @@ describe('AuthUser real HTTP flow', () => {
     process.env.JWT_ISSUER = 'gamebook-authuser-test';
     process.env.JWT_AUDIENCE = 'gamebook-test';
 
+    const { AppModule } = await import('../../src/app.module.js');
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
