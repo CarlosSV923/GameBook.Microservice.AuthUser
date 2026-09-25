@@ -2,35 +2,80 @@
 
 [Leer este README en inglés](README.md)
 
-`GameBook.Microservice.AuthUser` es el servicio de cuentas y autenticación de GameBook, un proyecto de portfolio para explorar videojuegos y guardar favoritos personales.
+`GameBook.Microservice.AuthUser` es el servicio de cuentas y autenticación de GameBook. Administra las cuentas, credenciales, sesiones, emisión de JWT y cambios de contraseña de la aplicación de portfolio.
 
 ## Responsabilidad
 
-El servicio es propietario de las cuentas de usuario, el inicio de sesión, la emisión y validación de JWT, la revocación de sesiones y el cambio de contraseña. Usa NestJS, Prisma y PostgreSQL, con capas orientadas a DDD y una interfaz OpenAPI/Swagger.
+AuthUser es propietario del registro, inicio de sesión, validación de sesión actual, cambios de contraseña, firma JWT y revocación de sesiones. Persiste usuarios en su propio esquema PostgreSQL mediante Prisma y publica un contrato OpenAPI/Swagger. Los JWT usan RS256, expiran después de una hora y son consumidos por el frontend y el servicio Game.
 
-## Estado del repositorio
+## Arquitectura implementada
 
-La API AuthUser implementa los flujos de cuenta y sesión definidos por el contrato del MVP. El despliegue productivo queda para una tarea SDD posterior; durante el desarrollo, la validación local es la referencia operativa.
+- `src/api/` — controladores HTTP, validación, CORS, IDs de solicitud, mapeo de excepciones y Swagger/OpenAPI.
+- `src/application/` — casos de uso, puertos de aplicación y tokens de dependencias.
+- `src/domain/` — entidades de usuario, políticas de email y contraseña, repositorios y errores de dominio.
+- `src/infrastructure/` — persistencia Prisma, criptografía, configuración de runtime y adaptadores.
+- `src/main.ts` — arranque de la aplicación, configuración HTTP y documentación.
 
-## Desarrollo local
+El acceso runtime a la base de datos usa `AUTH_DATABASE_URL`. Las migraciones Prisma usan `AUTH_DATABASE_DIRECT_URL` por separado y únicamente desde comandos de migración controlados o Actions; las credenciales de migración no son credenciales runtime ni forman parte de Docker Compose.
 
-Instala las dependencias y genera el cliente de Prisma:
+## Configuración local
+
+Requisitos previos:
+
+- Node.js 24 o una versión LTS compatible.
+- pnpm 12.4.1 mediante Corepack.
+- Un rol local de prueba para la base de datos y una clave privada RS256 correspondiente a la clave pública configurada en Game.
+
+Instala las dependencias y genera el cliente Prisma:
 
 ```bash
+corepack enable
 pnpm install --frozen-lockfile
 pnpm db:generate
 ```
 
-Crea un archivo `.env` privado e ignorado por Git con las variables de runtime `AUTH_DATABASE_URL`, `JWT_PRIVATE_KEY`, `JWT_ISSUER` y `JWT_AUDIENCE`. Puedes configurar `CORS_ALLOWED_ORIGINS` como `http://localhost:3000`. Si necesitas generar localmente el cliente de Prisma, proporciona `AUTH_DATABASE_DIRECT_URL` de forma privada para ese comando; es una conexión directa de migración, nunca una variable de runtime o despliegue. Nunca confirmes estos valores en Git.
+Crea un archivo `.env` privado e ignorado por Git. Los nombres de variables se muestran sin valores:
 
-Inicia el servicio con `pnpm start:dev`. AuthUser escucha por defecto en `http://localhost:3001`; define `PORT` solo si necesitas otro puerto local.
+```dotenv
+AUTH_DATABASE_URL=
+JWT_PRIVATE_KEY=
+JWT_ISSUER=
+JWT_AUDIENCE=
+CORS_ALLOWED_ORIGINS=
+PORT=
+```
 
-- Swagger UI: `http://localhost:3001/docs`
-- JSON OpenAPI: `http://localhost:3001/docs/openapi.json`
-- URL local del Frontend: `http://localhost:3000`
-- URL local de Game: `http://localhost:3002`
+`AUTH_DATABASE_DIRECT_URL` solo es necesaria para comandos de migración Prisma y debe mantenerse fuera de los archivos de runtime y Compose. Los valores PEM pueden usar escapes literales `\n`; el servicio los normaliza antes de analizarlos. Nunca confirmes archivos de entorno, claves privadas ni credenciales de base de datos.
 
-Para la integración local, Game debe usar `AUTHUSER_URL=http://localhost:3001` y Frontend debe usar `NEXT_PUBLIC_AUTHUSER_URL=http://localhost:3001`. Ambas variables contienen la URL base de AuthUser sin el sufijo `/v1`.
+Inicia el servicio:
+
+```bash
+pnpm start:dev
+```
+
+AuthUser escucha por defecto en el puerto local 3001.
+
+## Endpoints locales
+
+| Recurso | URL |
+| --- | --- |
+| URL base del servicio | `http://localhost:3001` |
+| Swagger UI | `http://localhost:3001/docs` |
+| JSON OpenAPI | `http://localhost:3001/docs/openapi.json` |
+| Frontend | `http://localhost:3000` |
+| Game | `http://localhost:3002` |
+
+Game y el frontend usan la URL base de AuthUser sin el sufijo `/v1`. Las llamadas autenticadas llevan el JWT en `Authorization: Bearer <token>`.
+
+## Pruebas y comprobaciones de calidad
+
+```bash
+pnpm test
+pnpm test:e2e
+pnpm lint
+pnpm exec tsc --noEmit -p tsconfig.build.json
+pnpm build
+```
 
 ## Proyectos relacionados
 
