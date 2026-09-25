@@ -9,6 +9,14 @@ import {
   UnauthorizedException,
   Body,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { ErrorResponseModel } from '../openapi/api-models.js';
 import { CHANGE_PASSWORD_USE_CASE } from '../../application/ports/dependency-tokens.js';
 import {
   ChangePasswordUseCase,
@@ -21,6 +29,8 @@ import { ChangeMyPasswordRequest } from './change-my-password.dto.js';
 const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
 
 @Controller('v1/users/me')
+@ApiTags('User')
+@ApiBearerAuth('BearerAuth')
 export class ChangeMyPasswordController {
   constructor(
     @Inject(CHANGE_PASSWORD_USE_CASE)
@@ -29,6 +39,33 @@ export class ChangeMyPasswordController {
 
   @Patch('password')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    operationId: 'changeMyPassword',
+    summary: 'Change the authenticated account password',
+    description:
+      'Requires the current password and a new password that meets the MVP policy. The hash replacement increments sessionVersion atomically and immediately revokes all previously issued JWTs, including the token used for this request.',
+  })
+  @ApiBody({ type: ChangeMyPasswordRequest })
+  @ApiResponse({
+    status: 204,
+    description: 'Password changed; no response body.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Request validation failed.',
+    type: ErrorResponseModel,
+  })
+  @ApiResponse({
+    status: 401,
+    description:
+      'Bearer token is missing, invalid, expired, revoked or the current password is incorrect.',
+    type: ErrorResponseModel,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Unexpected server error.',
+    type: ErrorResponseModel,
+  })
   async change(
     @Headers('authorization') authorization: string | undefined,
     @Body() request: ChangeMyPasswordRequest,

@@ -46,6 +46,52 @@ describe('HTTP application (e2e)', () => {
       .expect('x-request-id', /^req_[0-9a-f-]{36}$/);
   });
 
+  it('serves a contract-aligned OpenAPI document with Bearer security', async () => {
+    await request(app.getHttpServer()).get('/docs').redirects(1).expect(200);
+
+    const response = await request(app.getHttpServer())
+      .get('/docs/openapi.json')
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      openapi: '3.0.0',
+      info: {
+        title: 'GameBook AuthUser API',
+        version: '0.1.0',
+      },
+    });
+    expect(response.body.tags).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Authentication' }),
+        expect.objectContaining({ name: 'User' }),
+      ]),
+    );
+    expect(response.body.components.securitySchemes.BearerAuth).toMatchObject({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+    });
+
+    const paths = response.body.paths;
+    expect(paths['/v1/auth/register'].post.operationId).toBe('registerUser');
+    expect(paths['/v1/auth/login'].post.operationId).toBe('loginUser');
+    expect(paths['/v1/auth/session'].get.operationId).toBe('getCurrentSession');
+    expect(paths['/v1/users/me/password'].patch.operationId).toBe(
+      'changeMyPassword',
+    );
+    expect(paths['/v1/auth/session'].get.security).toEqual([
+      { BearerAuth: [] },
+    ]);
+    expect(paths['/v1/users/me/password'].patch.security).toEqual([
+      { BearerAuth: [] },
+    ]);
+    expect(paths['/v1/users/me/password'].patch.responses['204']).toBeDefined();
+
+    expect(JSON.stringify(response.body)).not.toMatch(
+      /PRIVATE KEY|client_secret|access_token:|Bearer ey/u,
+    );
+  });
+
   it('preserves a safe request id and allows its configured CORS origin', () => {
     return request(app.getHttpServer())
       .post('/v1/auth/login')
