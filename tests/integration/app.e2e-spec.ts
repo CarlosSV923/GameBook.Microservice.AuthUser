@@ -14,7 +14,7 @@ const originalEnvironment = {
   JWT_AUDIENCE: process.env.JWT_AUDIENCE,
 };
 
-describe('AppController (e2e)', () => {
+describe('HTTP application (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(() => {
@@ -38,29 +38,31 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET) returns a request id', () => {
+  it('returns a request id for a real AuthUser request', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('x-request-id', /^req_[0-9a-f-]{36}$/)
-      .expect('Hello World!');
+      .post('/v1/auth/login')
+      .send({})
+      .expect(400)
+      .expect('x-request-id', /^req_[0-9a-f-]{36}$/);
   });
 
   it('preserves a safe request id and allows its configured CORS origin', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .post('/v1/auth/login')
       .set('Origin', 'http://frontend.test')
       .set('X-Request-Id', 'req_client_123')
-      .expect(200)
+      .send({})
+      .expect(400)
       .expect('x-request-id', 'req_client_123')
       .expect('access-control-allow-origin', 'http://frontend.test');
   });
 
   it('does not expose CORS permission for an unconfigured origin', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .post('/v1/auth/login')
       .set('Origin', 'http://untrusted.test')
-      .expect(200)
+      .send({})
+      .expect(400)
       .expect((response) => {
         expect(response.headers['access-control-allow-origin']).toBeUndefined();
       });
