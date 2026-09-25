@@ -16,7 +16,7 @@ AuthUser es propietario del registro, inicio de sesión, validación de sesión 
 - `src/infrastructure/` — persistencia Prisma, criptografía, configuración de runtime y adaptadores.
 - `src/main.ts` — arranque de la aplicación, configuración HTTP y documentación.
 
-El acceso runtime a la base de datos usa `AUTH_DATABASE_URL`. Las migraciones Prisma usan `AUTH_DATABASE_DIRECT_URL` por separado y únicamente desde comandos de migración controlados o Actions; las credenciales de migración no son credenciales runtime ni forman parte de Docker Compose.
+El acceso runtime a la base de datos usa `AUTH_DATABASE_URL`. Las migraciones Prisma usan `AUTH_DATABASE_DIRECT_URL` por separado y únicamente desde comandos de migración controlados o Actions; las credenciales de migración no son credenciales runtime.
 
 ## Configuración local
 
@@ -45,9 +45,9 @@ CORS_ALLOWED_ORIGINS=
 PORT=
 ```
 
-`AUTH_DATABASE_DIRECT_URL` solo es necesaria para comandos de migración Prisma y debe mantenerse fuera de los archivos de runtime y Compose. Los valores PEM pueden usar escapes literales `\n`; el servicio los normaliza antes de analizarlos. Nunca confirmes archivos de entorno, claves privadas ni credenciales de base de datos.
+`AUTH_DATABASE_DIRECT_URL` solo es necesaria para comandos de migración Prisma y debe mantenerse fuera de los archivos de runtime. Los valores PEM pueden usar escapes literales `\n`; el servicio los normaliza antes de analizarlos. Nunca confirmes archivos de entorno, claves privadas ni credenciales de base de datos.
 
-Inicia el servicio:
+Inicia AuthUser de forma individual:
 
 ```bash
 pnpm start:dev
