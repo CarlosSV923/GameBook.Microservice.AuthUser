@@ -1,3 +1,5 @@
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
 export const PASSWORD_HASHER = Symbol('PASSWORD_HASHER');
 export const REGISTER_USER_USE_CASE = Symbol('REGISTER_USER_USE_CASE');
+export const JWT_SIGNER = Symbol('JWT_SIGNER');
+export const LOGIN_USER_USE_CASE = Symbol('LOGIN_USER_USE_CASE');
