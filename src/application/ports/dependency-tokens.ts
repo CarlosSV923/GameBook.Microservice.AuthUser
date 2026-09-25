@@ -5,3 +5,4 @@ export const JWT_SIGNER = Symbol('JWT_SIGNER');
 export const LOGIN_USER_USE_CASE = Symbol('LOGIN_USER_USE_CASE');
 export const JWT_VERIFIER = Symbol('JWT_VERIFIER');
 export const VALIDATE_SESSION_USE_CASE = Symbol('VALIDATE_SESSION_USE_CASE');
+export const CHANGE_PASSWORD_USE_CASE = Symbol('CHANGE_PASSWORD_USE_CASE');

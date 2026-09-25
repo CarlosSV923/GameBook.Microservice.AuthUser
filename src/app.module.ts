@@ -8,6 +8,7 @@ import { PrismaService } from './infrastructure/persistence/prisma/prisma-servic
 import { RegisterUserController } from './api/auth/register-user.controller.js';
 import { LoginUserController } from './api/auth/login-user.controller.js';
 import { GetCurrentSessionController } from './api/auth/get-current-session.controller.js';
+import { ChangeMyPasswordController } from './api/users/change-my-password.controller.js';
 import { ScryptPasswordHasher } from './infrastructure/cryptography/scrypt-password-hasher.js';
 import { PrismaUserRepository } from './infrastructure/persistence/prisma/prisma-user-repository.js';
 import {
@@ -18,10 +19,12 @@ import {
   REGISTER_USER_USE_CASE,
   USER_REPOSITORY,
   VALIDATE_SESSION_USE_CASE,
+  CHANGE_PASSWORD_USE_CASE,
 } from './application/ports/dependency-tokens.js';
 import { RegisterUserUseCase } from './application/use-cases/register-user.js';
 import { LoginUserUseCase } from './application/use-cases/login-user.js';
 import { ValidateSessionUseCase } from './application/use-cases/validate-session.js';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.js';
 import type { PasswordHasher } from './application/ports/password-hasher.js';
 import type { JwtSigner, JwtVerifier } from './application/ports/jwt-ports.js';
 import type { UserRepository } from './domain/users/user-repository.js';
@@ -38,6 +41,7 @@ import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-conf
     RegisterUserController,
     LoginUserController,
     GetCurrentSessionController,
+    ChangeMyPasswordController,
   ],
   providers: [
     PrismaService,
@@ -99,6 +103,20 @@ import { loadAuthRuntimeConfig } from './infrastructure/config/auth-runtime-conf
       useFactory: (jwtVerifier: JwtVerifier, userRepository: UserRepository) =>
         new ValidateSessionUseCase(jwtVerifier, userRepository),
       inject: [JWT_VERIFIER, USER_REPOSITORY],
+    },
+    {
+      provide: CHANGE_PASSWORD_USE_CASE,
+      useFactory: (
+        validateSession: ValidateSessionUseCase,
+        passwordHasher: PasswordHasher,
+        userRepository: UserRepository,
+      ) =>
+        new ChangePasswordUseCase(
+          validateSession,
+          passwordHasher,
+          userRepository,
+        ),
+      inject: [VALIDATE_SESSION_USE_CASE, PASSWORD_HASHER, USER_REPOSITORY],
     },
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_PIPE, useFactory: createValidationPipe },
