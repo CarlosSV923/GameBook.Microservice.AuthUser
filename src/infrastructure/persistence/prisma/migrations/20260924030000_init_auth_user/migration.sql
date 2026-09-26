@@ -1,6 +1,3 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "auth";
-
 -- CreateTable
 CREATE TABLE "auth"."User" (
     "id" UUID NOT NULL,
