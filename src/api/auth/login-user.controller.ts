@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Inject,
   Post,
+  ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import {
   InvalidCredentialsError,
   LoginUserUseCase,
 } from '../../application/use-cases/login-user.js';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
 import { LoginUserRequest } from './login-user.dto.js';
 
 @Controller('v1/auth')
@@ -52,6 +54,11 @@ export class LoginUserController {
     type: ErrorResponseModel,
   })
   @ApiResponse({
+    status: 403,
+    description: 'The account is disabled.',
+    type: ErrorResponseModel,
+  })
+  @ApiResponse({
     status: 500,
     description: 'Unexpected server error.',
     type: ErrorResponseModel,
@@ -62,6 +69,10 @@ export class LoginUserController {
     } catch (error) {
       if (error instanceof InvalidCredentialsError) {
         throw new UnauthorizedException({ code: 'INVALID_CREDENTIALS' });
+      }
+
+      if (error instanceof AccountDisabledError) {
+        throw new ForbiddenException({ code: 'ACCOUNT_DISABLED' });
       }
 
       throw error;

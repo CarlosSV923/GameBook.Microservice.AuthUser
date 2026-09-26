@@ -1,10 +1,7 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ChangeMyPasswordController } from './users/change-my-password.controller.js';
+import { DisableMyAccountController } from './users/disable-my-account.controller.js';
 import { GetCurrentSessionController } from './auth/get-current-session.controller.js';
 import { LoginUserController } from './auth/login-user.controller.js';
 import { RegisterUserController } from './auth/register-user.controller.js';
@@ -21,6 +18,7 @@ import { ApplicationModule } from '../application/application.module.js';
     LoginUserController,
     GetCurrentSessionController,
     ChangeMyPasswordController,
+    DisableMyAccountController,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },

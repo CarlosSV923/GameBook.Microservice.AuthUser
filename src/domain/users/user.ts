@@ -12,6 +12,7 @@ export interface UserPersistence {
   readonly email: string;
   readonly passwordHash: string;
   readonly sessionVersion: number;
+  readonly isDisabled?: boolean;
 }
 
 interface UserState {
@@ -20,6 +21,7 @@ interface UserState {
   email: string;
   passwordHash: string;
   sessionVersion: number;
+  isDisabled: boolean;
 }
 
 export interface NewUser {
@@ -58,6 +60,7 @@ export class User {
       email: EmailAddress.create(input.email).value,
       passwordHash: input.passwordHash,
       sessionVersion: 1,
+      isDisabled: false,
     });
   }
 
@@ -82,6 +85,7 @@ export class User {
     return new User({
       ...user.toPersistence(),
       sessionVersion: state.sessionVersion,
+      isDisabled: state.isDisabled ?? false,
     });
   }
 
@@ -105,6 +109,10 @@ export class User {
     return this.state.sessionVersion;
   }
 
+  get isDisabled(): boolean {
+    return this.state.isDisabled;
+  }
+
   changePasswordHash(passwordHash: string): void {
     if (passwordHash.trim().length === 0) {
       throw new DomainValidationError(
@@ -121,6 +129,22 @@ export class User {
     }
 
     this.state.passwordHash = passwordHash;
+    this.state.sessionVersion += 1;
+  }
+
+  disable(): void {
+    if (this.state.isDisabled) {
+      return;
+    }
+
+    if (this.state.sessionVersion === Number.MAX_SAFE_INTEGER) {
+      throw new DomainValidationError(
+        'SESSION_VERSION_EXHAUSTED',
+        'The session version cannot be increased.',
+      );
+    }
+
+    this.state.isDisabled = true;
     this.state.sessionVersion += 1;
   }
 

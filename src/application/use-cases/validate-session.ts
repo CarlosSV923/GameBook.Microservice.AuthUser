@@ -7,7 +7,7 @@ import type { UserRepository } from '../../domain/users/user-repository.js';
 import type { User } from '../../domain/users/user.js';
 
 export type SessionValidationErrorCode =
-  'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'SESSION_REVOKED';
+  'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'SESSION_REVOKED' | 'ACCOUNT_DISABLED';
 
 export interface ValidateSessionOutput {
   readonly user: {
@@ -60,7 +60,15 @@ export class ValidateSessionUseCase {
     }
 
     const user = await this.userRepository.findById(claims.sub);
-    if (!user || user.sessionVersion !== claims.ver) {
+    if (!user) {
+      throw new SessionValidationError('SESSION_REVOKED');
+    }
+
+    if (user.isDisabled) {
+      throw new SessionValidationError('ACCOUNT_DISABLED');
+    }
+
+    if (user.sessionVersion !== claims.ver) {
       throw new SessionValidationError('SESSION_REVOKED');
     }
 

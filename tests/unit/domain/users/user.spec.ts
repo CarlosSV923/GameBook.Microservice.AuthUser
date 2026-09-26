@@ -29,6 +29,15 @@ describe('User', () => {
     expect(user.sessionVersion).toBe(2);
   });
 
+  it('disables the account and increments the session version', () => {
+    const user = User.create(userInput);
+
+    user.disable();
+
+    expect(user.isDisabled).toBe(true);
+    expect(user.sessionVersion).toBe(2);
+  });
+
   it('rehydrates a persisted session version without resetting it', () => {
     const user = User.rehydrate({
       ...userInput,

@@ -3,6 +3,7 @@ import { EmailAlreadyRegisteredError } from '../../../src/domain/users/email-alr
 import type { UserRepository } from '../../../src/domain/users/user-repository.js';
 import { RegisterUserUseCase } from '../../../src/application/use-cases/register-user.js';
 import type { PasswordHasher } from '../../../src/application/ports/password-hasher.js';
+import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.js';
 
 describe('RegisterUserUseCase', () => {
   const userRepository = {
@@ -57,6 +58,18 @@ describe('RegisterUserUseCase', () => {
 
     await expect(useCase.execute(input)).rejects.toBeInstanceOf(
       EmailAlreadyRegisteredError,
+    );
+    expect(passwordHasher.hash).not.toHaveBeenCalled();
+    expect(userRepository.save).not.toHaveBeenCalled();
+  });
+
+  it('rejects the email of a disabled account without reactivating it', async () => {
+    userRepository.findByEmail = vi.fn().mockResolvedValue({
+      isDisabled: true,
+    });
+
+    await expect(useCase.execute(input)).rejects.toBeInstanceOf(
+      AccountDisabledError,
     );
     expect(passwordHasher.hash).not.toHaveBeenCalled();
     expect(userRepository.save).not.toHaveBeenCalled();

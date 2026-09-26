@@ -6,6 +6,7 @@ import {
   InvalidCredentialsError,
   LoginUserUseCase,
 } from '../../../src/application/use-cases/login-user.js';
+import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.js';
 
 describe('LoginUserUseCase', () => {
   const userRepository = {
@@ -93,6 +94,19 @@ describe('LoginUserUseCase', () => {
     await expect(
       useCase.execute({ email: 'ada@example.com', password: 'wrong' }),
     ).rejects.toBeInstanceOf(InvalidCredentialsError);
+    expect(jwtSigner.sign).not.toHaveBeenCalled();
+  });
+
+  it('rejects a disabled account with its stable account status', async () => {
+    userRepository.findByEmail = vi.fn().mockResolvedValue({
+      ...user,
+      isDisabled: true,
+    });
+
+    await expect(
+      useCase.execute({ email: 'ada@example.com', password: 'correct' }),
+    ).rejects.toBeInstanceOf(AccountDisabledError);
+    expect(passwordHasher.verify).not.toHaveBeenCalled();
     expect(jwtSigner.sign).not.toHaveBeenCalled();
   });
 

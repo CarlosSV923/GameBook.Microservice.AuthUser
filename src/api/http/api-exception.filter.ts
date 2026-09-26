@@ -26,6 +26,8 @@ const publicMessages: Record<string, string> = {
   TOKEN_INVALID: 'Authentication is not valid.',
   TOKEN_EXPIRED: 'Authentication has expired.',
   SESSION_REVOKED: 'Authentication is no longer valid.',
+  ACCOUNT_DISABLED:
+    'The account is disabled. Use another email or create a new account.',
   INVALID_CREDENTIALS: 'Invalid email or password.',
   EMAIL_ALREADY_REGISTERED: 'The email address is already registered.',
   FAVORITE_NOT_FOUND: 'Favorite not found.',
@@ -37,6 +39,7 @@ const publicMessages: Record<string, string> = {
 const statusCodes: Record<number, string> = {
   [HttpStatus.BAD_REQUEST]: 'VALIDATION_ERROR',
   [HttpStatus.UNAUTHORIZED]: 'TOKEN_INVALID',
+  [HttpStatus.FORBIDDEN]: 'ACCOUNT_DISABLED',
   [HttpStatus.INTERNAL_SERVER_ERROR]: 'INTERNAL_ERROR',
   [HttpStatus.SERVICE_UNAVAILABLE]: 'AUTHUSER_UNAVAILABLE',
 };
