@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.1](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.0...gamebook-microservice-authuser-v0.1.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* **authuser:** avoid creating managed auth schema ([c5a8b15](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/c5a8b15a13e501fe1f5c942a867e9e11e3509eb6))
+* **authuser:** avoid creating managed auth schema ([1b60264](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/1b602645c5d6cad448f88a9b3ebf6d1174dd2fa5))
+* **authuser:** promote managed schema migration fix ([2b95025](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/2b950255201847bebbf6de8a6afc5dc3bc6e75d0))
+
 ## [0.1.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.0.1...gamebook-microservice-authuser-v0.1.0) (2026-09-26)
 
 
