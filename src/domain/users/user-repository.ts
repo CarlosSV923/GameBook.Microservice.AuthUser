@@ -10,4 +10,5 @@ export interface UserRepository {
     passwordHash: string,
     expectedSessionVersion: number,
   ): Promise<boolean>;
+  disable(id: string, expectedSessionVersion: number): Promise<boolean>;
 }

@@ -58,6 +58,19 @@ describe('PrismaUserRepository', () => {
     });
   });
 
+  it('atomically disables an active account by session version', async () => {
+    userDelegate.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(
+      repository.disable(user.id, user.sessionVersion),
+    ).resolves.toBe(true);
+
+    expect(userDelegate.updateMany).toHaveBeenCalledWith({
+      where: { id: user.id, sessionVersion: 1, isDisabled: false },
+      data: { isDisabled: true, sessionVersion: { increment: 1 } },
+    });
+  });
+
   it('reports a failed compare-and-update when the session version changed', async () => {
     userDelegate.updateMany.mockResolvedValue({ count: 0 });
 

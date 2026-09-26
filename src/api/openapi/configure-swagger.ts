@@ -8,7 +8,7 @@ export function configureSwagger(application: INestApplication): void {
   const configuration = new DocumentBuilder()
     .setTitle('GameBook AuthUser API')
     .setDescription(
-      'User registration, authentication, current-session validation and password revocation for GameBook.',
+      'User registration, authentication, current-session validation, password revocation and logical account disabling for GameBook.',
     )
     .setVersion('0.1.0')
     .addTag(

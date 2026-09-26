@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   CHANGE_PASSWORD_USE_CASE,
+  DISABLE_ACCOUNT_USE_CASE,
   JWT_SIGNER,
   JWT_VERIFIER,
   LOGIN_USER_USE_CASE,
@@ -14,6 +15,7 @@ import type { JwtSigner, JwtVerifier } from './ports/jwt-ports.js';
 import type { PasswordHasher } from './ports/password-hasher.js';
 import type { UserRepository } from '../domain/users/user-repository.js';
 import { ChangePasswordUseCase } from './use-cases/change-password.js';
+import { DisableAccountUseCase } from './use-cases/disable-account.js';
 import { LoginUserUseCase } from './use-cases/login-user.js';
 import { RegisterUserUseCase } from './use-cases/register-user.js';
 import { ValidateSessionUseCase } from './use-cases/validate-session.js';
@@ -67,12 +69,21 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module.js
         ),
       inject: [VALIDATE_SESSION_USE_CASE, PASSWORD_HASHER, USER_REPOSITORY],
     },
+    {
+      provide: DISABLE_ACCOUNT_USE_CASE,
+      useFactory: (
+        validateSession: ValidateSessionUseCase,
+        userRepository: UserRepository,
+      ) => new DisableAccountUseCase(validateSession, userRepository),
+      inject: [VALIDATE_SESSION_USE_CASE, USER_REPOSITORY],
+    },
   ],
   exports: [
     REGISTER_USER_USE_CASE,
     LOGIN_USER_USE_CASE,
     VALIDATE_SESSION_USE_CASE,
     CHANGE_PASSWORD_USE_CASE,
+    DISABLE_ACCOUNT_USE_CASE,
   ],
 })
 export class ApplicationModule {}

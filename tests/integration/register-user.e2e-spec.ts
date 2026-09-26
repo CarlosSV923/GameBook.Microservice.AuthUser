@@ -8,6 +8,7 @@ import { createValidationPipe } from '../../src/api/http/validation-pipe.js';
 import { REGISTER_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
 import { RegisterUserController } from '../../src/api/auth/register-user.controller.js';
 import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.js';
+import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.js';
 
 describe('POST /v1/auth/register', () => {
   let app: INestApplication<App>;
@@ -105,6 +106,23 @@ describe('POST /v1/auth/register', () => {
         code: 'EMAIL_ALREADY_REGISTERED',
         message: 'The email address is already registered.',
         requestId: 'req_register_duplicate',
+      });
+  });
+
+  it('returns ACCOUNT_DISABLED for an email held by a disabled account', async () => {
+    execute.mockRejectedValue(new AccountDisabledError());
+
+    await request(app.getHttpServer())
+      .post('/v1/auth/register')
+      .send({
+        fullName: 'Ada Lovelace',
+        email: 'ada.lovelace@example.test',
+        password: 'GameBook@2026',
+        passwordConfirmation: 'GameBook@2026',
+      })
+      .expect(409)
+      .expect((response) => {
+        expect(response.body.code).toBe('ACCOUNT_DISABLED');
       });
   });
 });

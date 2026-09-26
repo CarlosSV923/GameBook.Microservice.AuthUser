@@ -15,6 +15,7 @@ model User {
   email          String @unique @db.VarChar(254)
   passwordHash   String @db.Text
   sessionVersion Int    @default(1)
+  isDisabled     Boolean @default(false)
 
   @@schema("auth")
 }

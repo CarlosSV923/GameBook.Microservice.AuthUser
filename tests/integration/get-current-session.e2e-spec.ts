@@ -96,6 +96,10 @@ describe('GET /v1/auth/session', () => {
     ['TOKEN_INVALID', 'Authentication is not valid.'],
     ['TOKEN_EXPIRED', 'Authentication has expired.'],
     ['SESSION_REVOKED', 'Authentication is no longer valid.'],
+    [
+      'ACCOUNT_DISABLED',
+      'The account is disabled. Use another email or create a new account.',
+    ],
   ])(
     'maps %s session failures to the contractual 401 response',
     async (code, message) => {

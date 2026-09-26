@@ -49,7 +49,8 @@ export class GetCurrentSessionController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Bearer token is missing, invalid, expired or revoked.',
+    description:
+      'Bearer token is missing, invalid, expired, revoked or belongs to a disabled account.',
     type: ErrorResponseModel,
   })
   @ApiResponse({

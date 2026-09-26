@@ -91,4 +91,17 @@ describe('ValidateSessionUseCase', () => {
       expect.objectContaining({ code: 'SESSION_REVOKED' }),
     );
   });
+
+  it('rejects a token for a disabled account with ACCOUNT_DISABLED', async () => {
+    userRepository.findById = vi.fn().mockResolvedValue(
+      User.rehydrate({
+        ...user.toPersistence(),
+        isDisabled: true,
+      }),
+    );
+
+    await expect(useCase.execute('signed.jwt.token')).rejects.toEqual(
+      expect.objectContaining({ code: 'ACCOUNT_DISABLED' }),
+    );
+  });
 });
