@@ -55,6 +55,22 @@ pnpm start:dev
 
 AuthUser escucha por defecto en el puerto local 3001.
 
+## Despliegue de producción
+
+AuthUser está desplegado en Render. La URL pública actual del servicio es [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), con Swagger UI en [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) y el documento OpenAPI en [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json).
+
+Configura estas variables runtime en Render sin confirmar sus valores:
+
+```dotenv
+AUTH_DATABASE_URL=
+JWT_PRIVATE_KEY=
+JWT_ISSUER=
+JWT_AUDIENCE=
+CORS_ALLOWED_ORIGINS=
+```
+
+`AUTH_DATABASE_DIRECT_URL` es exclusiva de migraciones y permanece restringida a comandos Prisma controlados y GitHub Actions. No debe configurarse en Render.
+
 ## Endpoints locales
 
 | Recurso | URL |
@@ -81,7 +97,7 @@ pnpm build
 
 Los commits siguen Conventional Commits. El workflow `release-please` se ejecuta únicamente con pushes a `main` o mediante ejecución manual, usa los archivos manifest del repositorio y se autentica con los permisos mínimos de `GITHUB_TOKEN` necesarios para crear pull requests de release y releases de GitHub. El CI normal valida los pull requests y `main`; el commit del release se valida mediante CI después de fusionar el pull request de release.
 
-`vercel.json` deshabilita los deployments automáticos de Git para cualquier rama excepto `main`. En esta etapa este repositorio no crea proyectos ni deployments de producción en Vercel.
+El despliegue de producción se gestiona mediante Render. El repositorio no contiene configuración específica del proveedor.
 
 ## Proyectos relacionados
 
