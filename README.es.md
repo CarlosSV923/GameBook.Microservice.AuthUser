@@ -57,7 +57,7 @@ AuthUser escucha por defecto en el puerto local 3001.
 
 ## Despliegue de producción
 
-AuthUser está desplegado en Render. La URL pública actual del servicio es [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), con Swagger UI en [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) y el documento OpenAPI en [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json).
+AuthUser está desplegado en Render. La URL pública actual del servicio es [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), con Swagger UI en [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) y el documento OpenAPI en [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json). El frontend productivo es [`https://gamebook-frontend.vercel.app`](https://gamebook-frontend.vercel.app), y el servicio Game es [`https://gamebook-microservice-game.onrender.com`](https://gamebook-microservice-game.onrender.com).
 
 Configura estas variables runtime en Render sin confirmar sus valores:
 
