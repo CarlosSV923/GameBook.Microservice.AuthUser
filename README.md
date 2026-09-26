@@ -55,6 +55,22 @@ pnpm start:dev
 
 AuthUser listens on local port 3001 by default.
 
+## Production deployment
+
+AuthUser is deployed on Render. The current public service URL is [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), with Swagger UI at [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) and the OpenAPI document at [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json).
+
+Configure these runtime variables in Render without committing their values:
+
+```dotenv
+AUTH_DATABASE_URL=
+JWT_PRIVATE_KEY=
+JWT_ISSUER=
+JWT_AUDIENCE=
+CORS_ALLOWED_ORIGINS=
+```
+
+`AUTH_DATABASE_DIRECT_URL` is migration-only and remains restricted to controlled Prisma commands and GitHub Actions. It must not be configured in Render.
+
 ## Local endpoints
 
 | Resource | URL |
@@ -81,7 +97,7 @@ pnpm build
 
 Commits follow Conventional Commits. The `release-please` workflow runs only on `main` pushes or a manual dispatch, uses the manifest files in the repository, and authenticates with the minimum `GITHUB_TOKEN` permissions required to create release pull requests and GitHub releases. The regular CI validates pull requests and `main`; the release commit is validated by CI after the release pull request is merged.
 
-`vercel.json` disables automatic Git deployments for every branch except `main`. No Vercel project or production deployment is created by this repository at this stage.
+Production deployment is managed through Render. The repository does not contain provider-specific deployment configuration.
 
 ## Related projects
 
