@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.2](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.1...gamebook-microservice-authuser-v0.1.2) (2026-09-26)
+
+
+### Bug Fixes
+
+* **authuser:** generate prisma client before build ([fb1bed7](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/fb1bed7ccc5856f2e3652cb88c381f86d89a4e6c))
+* **authuser:** generate prisma client before build ([3057b23](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/3057b2323727ada45be7b0b99803a7b20a21c0c0))
+* **authuser:** promote vercel build fix ([b155566](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/b1555661bae02640fce1522868424df51d7faaab))
+
 ## [0.1.1](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.0...gamebook-microservice-authuser-v0.1.1) (2026-09-26)
 
 
