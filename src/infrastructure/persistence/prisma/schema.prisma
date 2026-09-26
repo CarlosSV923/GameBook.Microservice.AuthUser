@@ -1,0 +1,20 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "./generated"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["auth"]
+}
+
+model User {
+  id             String @id @default(uuid()) @db.Uuid
+  fullName       String @db.VarChar(120)
+  email          String @unique @db.VarChar(254)
+  passwordHash   String @db.Text
+  sessionVersion Int    @default(1)
+
+  @@schema("auth")
+}
