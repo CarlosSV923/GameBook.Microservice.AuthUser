@@ -48,6 +48,22 @@ export class PrismaUserRepository implements UserRepository {
 
     return result.count === 1;
   }
+
+  async disable(id: string, expectedSessionVersion: number): Promise<boolean> {
+    const result = await this.prisma.user.updateMany({
+      where: {
+        id,
+        sessionVersion: expectedSessionVersion,
+        isDisabled: false,
+      },
+      data: {
+        isDisabled: true,
+        sessionVersion: { increment: 1 },
+      },
+    });
+
+    return result.count === 1;
+  }
 }
 
 function isUniqueConstraintError(error: unknown): boolean {

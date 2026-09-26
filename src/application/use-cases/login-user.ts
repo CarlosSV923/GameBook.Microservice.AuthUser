@@ -2,6 +2,7 @@ import { EmailAddress } from '../../domain/users/email-address.js';
 import type { JwtSigner } from '../ports/jwt-ports.js';
 import type { PasswordHasher } from '../ports/password-hasher.js';
 import type { UserRepository } from '../../domain/users/user-repository.js';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
 
 export const JWT_EXPIRES_IN_SECONDS = 3600;
 
@@ -47,6 +48,11 @@ export class LoginUserUseCase {
     }
 
     const user = await this.userRepository.findByEmail(email);
+
+    if (user?.isDisabled) {
+      throw new AccountDisabledError();
+    }
+
     const passwordMatches = await this.passwordHasher.verify(
       input.password,
       user?.passwordHash ?? '',

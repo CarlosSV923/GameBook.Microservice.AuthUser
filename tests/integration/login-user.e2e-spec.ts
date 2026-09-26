@@ -8,6 +8,7 @@ import { createValidationPipe } from '../../src/api/http/validation-pipe.js';
 import { LOGIN_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
 import { LoginUserController } from '../../src/api/auth/login-user.controller.js';
 import { InvalidCredentialsError } from '../../src/application/use-cases/login-user.js';
+import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.js';
 
 describe('POST /v1/auth/login', () => {
   let app: INestApplication<App>;
@@ -79,6 +80,21 @@ describe('POST /v1/auth/login', () => {
         code: 'INVALID_CREDENTIALS',
         message: 'Invalid email or password.',
         requestId: 'req_login_invalid',
+      });
+  });
+
+  it('returns ACCOUNT_DISABLED for a disabled account', async () => {
+    execute.mockRejectedValue(new AccountDisabledError());
+
+    await request(app.getHttpServer())
+      .post('/v1/auth/login')
+      .send({
+        email: 'ada.lovelace@example.test',
+        password: 'GameBook@2026',
+      })
+      .expect(403)
+      .expect((response) => {
+        expect(response.body.code).toBe('ACCOUNT_DISABLED');
       });
   });
 

@@ -12,6 +12,7 @@ import {
   UserResponseModel,
 } from '../openapi/api-models.js';
 import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.js';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
 import { REGISTER_USER_USE_CASE } from '../../application/ports/dependency-tokens.js';
 import {
   RegisterUserUseCase,
@@ -47,7 +48,8 @@ export class RegisterUserController {
   })
   @ApiResponse({
     status: 409,
-    description: 'The email address is already registered.',
+    description:
+      'The email address is already registered or belongs to a disabled account.',
     type: ErrorResponseModel,
   })
   @ApiResponse({
@@ -70,6 +72,10 @@ export class RegisterUserController {
         throw new ConflictException({
           code: 'EMAIL_ALREADY_REGISTERED',
         });
+      }
+
+      if (error instanceof AccountDisabledError) {
+        throw new ConflictException({ code: 'ACCOUNT_DISABLED' });
       }
 
       throw error;

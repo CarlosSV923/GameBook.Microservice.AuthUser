@@ -3,6 +3,7 @@ import { EmailAddress } from '../../domain/users/email-address.js';
 import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.js';
 import { PasswordPolicy } from '../../domain/users/password-policy.js';
 import { User } from '../../domain/users/user.js';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
 import type { UserRepository } from '../../domain/users/user-repository.js';
 import type { PasswordHasher } from '../ports/password-hasher.js';
 
@@ -59,6 +60,10 @@ export class RegisterUserUseCase {
 
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
+      if (existingUser.isDisabled) {
+        throw new AccountDisabledError();
+      }
+
       throw new EmailAlreadyRegisteredError();
     }
 

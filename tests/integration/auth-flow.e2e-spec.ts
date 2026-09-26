@@ -54,6 +54,16 @@ class InMemoryUserRepository implements UserRepository {
     user.changePasswordHash(passwordHash);
     return true;
   }
+
+  async disable(id: string, expectedSessionVersion: number): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user || user.sessionVersion !== expectedSessionVersion) {
+      return false;
+    }
+
+    user.disable();
+    return true;
+  }
 }
 
 const testKeyPair = generateDevelopmentKeyPair();
@@ -216,6 +226,56 @@ describe('AuthUser real HTTP flow', () => {
         password: 'GameBook#2027',
       })
       .expect(200);
+  });
+
+  it('disables the account, revokes its JWTs and blocks login and registration', async () => {
+    const user = await registerUser();
+    const login = await request(app.getHttpServer())
+      .post('/v1/auth/login')
+      .send({
+        email: 'ada.lovelace@example.test',
+        password: 'GameBook@2026',
+      })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete('/v1/users/me')
+      .set('Authorization', `Bearer ${login.body.accessToken}`)
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .get('/v1/auth/session')
+      .set('Authorization', `Bearer ${login.body.accessToken}`)
+      .expect(401)
+      .expect((response) => {
+        expect(response.body.code).toBe('ACCOUNT_DISABLED');
+      });
+
+    await request(app.getHttpServer())
+      .post('/v1/auth/login')
+      .send({
+        email: 'ada.lovelace@example.test',
+        password: 'GameBook@2026',
+      })
+      .expect(403)
+      .expect((response) => {
+        expect(response.body.code).toBe('ACCOUNT_DISABLED');
+      });
+
+    await request(app.getHttpServer())
+      .post('/v1/auth/register')
+      .send({
+        fullName: 'Another Ada',
+        email: 'ada.lovelace@example.test',
+        password: 'GameBook@2026',
+        passwordConfirmation: 'GameBook@2026',
+      })
+      .expect(409)
+      .expect((response) => {
+        expect(response.body.code).toBe('ACCOUNT_DISABLED');
+      });
+
+    expect(user.id).toBeTruthy();
   });
 
   async function registerUser(): Promise<{ id: string }> {
