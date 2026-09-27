@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.2...gamebook-microservice-authuser-v0.2.0) (2026-09-26)
+
+
+### Features
+
+* add logical account deactivation ([00a4072](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/00a4072ef795581c2fa04499e059ae5b53c1976f))
+* add logical account deactivation ([5f41330](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/5f4133047a4c3359b3bcb9d55d7e233738eb46aa))
+
 ## [0.1.2](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.1...gamebook-microservice-authuser-v0.1.2) (2026-09-26)
 
 
