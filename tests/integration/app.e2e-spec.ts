@@ -46,6 +46,13 @@ describe('HTTP application (e2e)', () => {
       .expect('x-request-id', /^req_[0-9a-f-]{36}$/);
   });
 
+  it('exposes a public healthcheck with HTTP 200', () => {
+    return request(app.getHttpServer())
+      .get('/health')
+      .expect(200)
+      .expect({ status: 'ok' });
+  });
+
   it('serves a contract-aligned OpenAPI document with Bearer security', async () => {
     await request(app.getHttpServer()).get('/docs').redirects(1).expect(200);
 
@@ -73,6 +80,8 @@ describe('HTTP application (e2e)', () => {
     });
 
     const paths = response.body.paths;
+    expect(paths['/health'].get.operationId).toBe('getAuthUserHealth');
+    expect(paths['/health'].get.security).toBeUndefined();
     expect(paths['/v1/auth/register'].post.operationId).toBe('registerUser');
     expect(paths['/v1/auth/login'].post.operationId).toBe('loginUser');
     expect(paths['/v1/auth/session'].get.operationId).toBe('getCurrentSession');
