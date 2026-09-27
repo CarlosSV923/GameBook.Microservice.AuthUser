@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.2.0...gamebook-microservice-authuser-v0.3.0) (2026-09-27)
+
+
+### Features
+
+* add AuthUser healthcheck endpoint ([bbb43be](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/bbb43bed2d4d37518002ed26613779e17aed38fc))
+
 ## [0.2.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.1.2...gamebook-microservice-authuser-v0.2.0) (2026-09-26)
 
 
