@@ -5,6 +5,7 @@ import { DisableMyAccountController } from './users/disable-my-account.controlle
 import { GetCurrentSessionController } from './auth/get-current-session.controller.js';
 import { LoginUserController } from './auth/login-user.controller.js';
 import { RegisterUserController } from './auth/register-user.controller.js';
+import { HealthController } from './health/health.controller.js';
 import { ApiExceptionFilter } from './http/api-exception.filter.js';
 import { RequestIdMiddleware } from './http/request-id.js';
 import { RequestLoggingMiddleware } from './http/request-logging.middleware.js';
@@ -19,6 +20,7 @@ import { ApplicationModule } from '../application/application.module.js';
     GetCurrentSessionController,
     ChangeMyPasswordController,
     DisableMyAccountController,
+    HealthController,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
