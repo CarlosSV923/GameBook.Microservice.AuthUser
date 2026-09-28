@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de GameBook AuthUser",
+    "output": "GameBook.Microservice.AuthUser-architecture-es.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/CarlosSV923/GameBook.Microservice.AuthUser",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "33a7c6438478ae542c9f8fc36afbf2cad3ff0b49"
+    },
+    "views": [
+      {
+        "id": "request-path",
+        "label": "Ruta de solicitudes de cuenta",
+        "focus": ["frontend", "api", "application", "domain", "prisma", "postgres"],
+        "note": "Sigue las solicitudes de registro, inicio de sesión, sesión, contraseña y desactivación hasta el estado persistente."
+      },
+      {
+        "id": "security",
+        "label": "Autenticación y secretos",
+        "focus": ["api", "jwt", "password", "config", "application"],
+        "note": "Observa cómo las claves JWT, el hash de contraseñas y la configuración de ejecución soportan los casos de uso."
+      },
+      {
+        "id": "operations",
+        "label": "Operación y documentación",
+        "focus": ["frontend", "api", "health", "openapi", "config"],
+        "note": "Inspecciona los puntos de healthcheck y OpenAPI expuestos por el servicio."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "frontend",
+      "type": "external",
+      "label": "GameBook Frontend",
+      "sublabel": "Cliente Next.js",
+      "pos": [40, 300],
+      "size": [170, 72],
+      "sources": [{ "path": "README.es.md", "label": "consumidor" }]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API AuthUser",
+      "sublabel": "Frontera HTTP NestJS",
+      "tag": "/v1 + /docs",
+      "pos": [250, 300],
+      "size": [170, 82],
+      "sources": [{ "path": "src/api/api.module.ts", "label": "rutas" }]
+    },
+    {
+      "id": "application",
+      "type": "backend",
+      "label": "Casos de uso",
+      "sublabel": "Registro · Login · Sesión",
+      "tag": "Contraseña + desactivación",
+      "pos": [460, 300],
+      "size": [190, 82],
+      "sources": [{ "path": "src/application/use-cases/login-user.ts", "label": "orquestación" }]
+    },
+    {
+      "id": "domain",
+      "type": "backend",
+      "label": "Modelo de dominio",
+      "sublabel": "Usuario · email · políticas",
+      "pos": [690, 300],
+      "size": [170, 82],
+      "sources": [{ "path": "src/domain/users/user.ts", "label": "invariantes" }]
+    },
+    {
+      "id": "prisma",
+      "type": "backend",
+      "label": "Repositorio Prisma",
+      "sublabel": "Adaptador de persistencia",
+      "tag": "esquema auth",
+      "pos": [910, 300],
+      "size": [180, 82],
+      "sources": [{ "path": "src/infrastructure/persistence/prisma/prisma-user-repository.ts", "label": "adaptador" }]
+    },
+    {
+      "id": "postgres",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "Neon · esquema auth",
+      "pos": [1130, 300],
+      "size": [170, 82],
+      "sources": [{ "path": "src/infrastructure/persistence/prisma/schema.prisma", "label": "persistencia" }]
+    },
+    {
+      "id": "jwt",
+      "type": "security",
+      "label": "JWT RS256",
+      "sublabel": "Firma · verificación · sesión",
+      "pos": [460, 120],
+      "size": [190, 76],
+      "sources": [{ "path": "src/infrastructure/cryptography/rsa-jwt.ts", "label": "criptografía" }]
+    },
+    {
+      "id": "password",
+      "type": "security",
+      "label": "Hash de contraseñas",
+      "sublabel": "Adaptador scrypt",
+      "pos": [690, 120],
+      "size": [170, 76],
+      "sources": [{ "path": "src/infrastructure/cryptography/scrypt-password-hasher.ts", "label": "criptografía" }]
+    },
+    {
+      "id": "config",
+      "type": "security",
+      "label": "Configuración de ejecución",
+      "sublabel": "Validación de entorno",
+      "tag": "claves · orígenes · base de datos",
+      "pos": [910, 120],
+      "size": [180, 76],
+      "sources": [{ "path": "src/infrastructure/config/auth-runtime-config.ts", "label": "configuración" }]
+    },
+    {
+      "id": "health",
+      "type": "backend",
+      "label": "Healthcheck",
+      "sublabel": "GET /health → 200",
+      "pos": [250, 510],
+      "size": [170, 72],
+      "sources": [{ "path": "src/api/health/health.controller.ts", "label": "operación" }]
+    },
+    {
+      "id": "openapi",
+      "type": "backend",
+      "label": "OpenAPI / Swagger",
+      "sublabel": "GET /docs · /docs/openapi.json",
+      "pos": [460, 510],
+      "size": [210, 72],
+      "sources": [{ "path": "src/api/openapi/configure-swagger.ts", "label": "documentación" }]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Servicio GameBook.AuthUser",
+      "wraps": ["api", "application", "domain", "prisma", "jwt", "password", "config", "health", "openapi"],
+      "pad": 28
+    },
+    {
+      "kind": "security-group",
+      "label": "Credenciales privadas de ejecución",
+      "wraps": ["jwt", "password", "config"],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    { "id": "frontend-api", "from": "frontend", "to": "api", "label": "HTTP + Bearer JWT", "variant": "emphasis", "labelDy": -30 },
+    { "id": "api-application", "from": "api", "to": "application", "label": "comandos validados", "labelDy": -35 },
+    { "id": "application-domain", "from": "application", "to": "domain", "label": "aplicar invariantes", "labelDy": -35 },
+    { "id": "domain-prisma", "from": "domain", "to": "prisma", "label": "puerto de repositorio", "variant": "dashed", "labelDy": -35 },
+    { "id": "prisma-postgres", "from": "prisma", "to": "postgres", "label": "SQL · esquema auth", "labelDy": -35 },
+    { "id": "api-jwt", "from": "api", "to": "jwt", "label": "autenticar / emitir", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": 26 },
+    { "id": "application-password", "from": "application", "to": "password", "label": "hash / verificar", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": 26 },
+    { "id": "api-health", "from": "api", "to": "health", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
+    { "id": "api-openapi", "from": "api", "to": "openapi", "label": "contrato de API", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 54 }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Ruta de solicitudes", "items": ["NestJS transforma solicitudes HTTP en casos de uso", "Las reglas de dominio protegen las invariantes de usuario y cuenta", "Prisma persiste usuarios en el esquema auth aislado"] },
+    { "dot": "rose", "title": "Seguridad", "items": ["JWT usa firma y verificación RS256", "Las contraseñas pasan por el adaptador scrypt", "Las claves y la base de datos permanecen en configuración validada"] },
+    { "dot": "emerald", "title": "Operación", "items": ["GET /health devuelve HTTP 200 para healthchecks", "Swagger UI y OpenAPI JSON describen el contrato del servicio"] }
+  ]
+}
