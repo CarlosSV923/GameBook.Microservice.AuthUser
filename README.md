@@ -16,6 +16,14 @@ AuthUser owns registration, login, current-session validation, password changes,
 - `src/infrastructure/` — Prisma persistence, cryptography, runtime configuration, and adapters.
 - `src/main.ts` — application bootstrap, HTTP configuration, and documentation setup.
 
+## AuthUser architecture
+
+The repository architecture diagram is available in English and Spanish. The embedded preview uses the validated dark theme; the interactive diagram is published with GitHub Pages.
+
+[![GameBook.Microservice.AuthUser architecture — English](architecture/GameBook.Microservice.AuthUser-architecture-en-dark.png)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
+
+- [Open the interactive diagram](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
+
 Runtime database access uses `AUTH_DATABASE_URL`. Prisma migrations use the separate `AUTH_DATABASE_DIRECT_URL` only from controlled migration commands or Actions; migration credentials are not runtime credentials.
 
 ## Local setup
