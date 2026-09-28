@@ -16,6 +16,14 @@ AuthUser es propietario del registro, inicio de sesión, validación de sesión 
 - `src/infrastructure/` — persistencia Prisma, criptografía, configuración de runtime y adaptadores.
 - `src/main.ts` — arranque de la aplicación, configuración HTTP y documentación.
 
+## Arquitectura de AuthUser
+
+El diagrama de arquitectura del repositorio está disponible en inglés y español. La vista previa embebida usa el tema oscuro validado; el diagrama interactivo se publica mediante GitHub Pages.
+
+[![Arquitectura de GameBook.Microservice.AuthUser — español](architecture/GameBook.Microservice.AuthUser-architecture-es-dark.png)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-es.html)
+
+- [Abrir el diagrama interactivo](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-es.html)
+
 El acceso runtime a la base de datos usa `AUTH_DATABASE_URL`. Las migraciones Prisma usan `AUTH_DATABASE_DIRECT_URL` por separado y únicamente desde comandos de migración controlados o Actions; las credenciales de migración no son credenciales runtime.
 
 ## Configuración local
