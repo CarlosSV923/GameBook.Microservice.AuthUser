@@ -111,3 +111,4 @@ Production deployment is managed through Render. The repository does not contain
 
 - [GameBook.Microservice.Game](https://github.com/CarlosSV923/GameBook.Microservice.Game)
 - [GameBook.Frontend](https://github.com/CarlosSV923/GameBook.Frontend)
+- [GameBook.System documentation](https://github.com/CarlosSV923/GameBook.System/blob/main/README.md)
