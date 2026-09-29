@@ -1,7 +1,7 @@
 import {
   createCorsOptions,
   getAllowedCorsOrigins,
-} from '../../../../src/api/http/cors-options.js';
+} from '../../../../src/api/http/cors-options.ts';
 
 describe('CORS options', () => {
   it('parses an explicit origin list and ignores wildcard values', () => {

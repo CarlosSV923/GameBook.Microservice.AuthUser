@@ -1,5 +1,5 @@
-import { DomainValidationError } from '../../../../src/domain/shared/domain-validation-error.js';
-import { PasswordPolicy } from '../../../../src/domain/users/password-policy.js';
+import { DomainValidationError } from '../../../../src/domain/shared/domain-validation-error.ts';
+import { PasswordPolicy } from '../../../../src/domain/users/password-policy.ts';
 
 describe('PasswordPolicy', () => {
   it('accepts the contract example shape', () => {

@@ -3,13 +3,13 @@ import { APP_FILTER } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.js';
-import { GetCurrentSessionController } from '../../src/api/auth/get-current-session.controller.js';
-import { VALIDATE_SESSION_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
+import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
+import { GetCurrentSessionController } from '../../src/api/auth/get-current-session.controller.ts';
+import { VALIDATE_SESSION_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
 import {
   SessionValidationError,
   type SessionValidationErrorCode,
-} from '../../src/application/use-cases/validate-session.js';
+} from '../../src/application/use-cases/validate-session.ts';
 
 describe('GET /v1/auth/session', () => {
   let app: INestApplication<App>;

@@ -1,5 +1,5 @@
-import { DomainValidationError } from '../../../../src/domain/shared/domain-validation-error.js';
-import { EmailAddress } from '../../../../src/domain/users/email-address.js';
+import { DomainValidationError } from '../../../../src/domain/shared/domain-validation-error.ts';
+import { EmailAddress } from '../../../../src/domain/users/email-address.ts';
 
 describe('EmailAddress', () => {
   it('normalizes surrounding whitespace and casing', () => {

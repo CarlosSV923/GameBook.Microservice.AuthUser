@@ -1,4 +1,4 @@
-import { DomainValidationError } from '../shared/domain-validation-error.js';
+import { DomainValidationError } from '../shared/domain-validation-error.ts';
 
 const MIN_PASSWORD_LENGTH = 8;
 const UPPERCASE_PATTERN = /[A-Z]/u;

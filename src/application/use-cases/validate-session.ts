@@ -2,9 +2,9 @@ import {
   type JwtClaims,
   JwtExpiredError,
   type JwtVerifier,
-} from '../ports/jwt-ports.js';
-import type { UserRepository } from '../../domain/users/user-repository.js';
-import type { User } from '../../domain/users/user.js';
+} from '../ports/jwt-ports.ts';
+import type { UserRepository } from '../../domain/users/user-repository.ts';
+import type { User } from '../../domain/users/user.ts';
 
 export type SessionValidationErrorCode =
   'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'SESSION_REVOKED' | 'ACCOUNT_DISABLED';

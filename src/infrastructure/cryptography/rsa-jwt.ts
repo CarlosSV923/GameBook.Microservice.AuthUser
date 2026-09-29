@@ -10,11 +10,11 @@ import type {
   JwtClaims,
   JwtSigner,
   JwtVerifier,
-} from '../../application/ports/jwt-ports.js';
+} from '../../application/ports/jwt-ports.ts';
 import {
   JwtExpiredError,
   JwtVerificationError,
-} from '../../application/ports/jwt-ports.js';
+} from '../../application/ports/jwt-ports.ts';
 
 export { JwtExpiredError, JwtVerificationError };
 

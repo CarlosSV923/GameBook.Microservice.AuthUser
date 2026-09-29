@@ -1,7 +1,7 @@
 import {
   createRequestId,
   resolveRequestId,
-} from '../../../../src/api/http/request-id.js';
+} from '../../../../src/api/http/request-id.ts';
 
 describe('request ids', () => {
   it('generates a request id with a safe prefix', () => {

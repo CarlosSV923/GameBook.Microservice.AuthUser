@@ -1,12 +1,12 @@
-import { EmailAddress } from '../../../src/domain/users/email-address.js';
-import type { JwtSigner } from '../../../src/application/ports/jwt-ports.js';
-import type { PasswordHasher } from '../../../src/application/ports/password-hasher.js';
-import type { UserRepository } from '../../../src/domain/users/user-repository.js';
+import { EmailAddress } from '../../../src/domain/users/email-address.ts';
+import type { JwtSigner } from '../../../src/application/ports/jwt-ports.ts';
+import type { PasswordHasher } from '../../../src/application/ports/password-hasher.ts';
+import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
 import {
   InvalidCredentialsError,
   LoginUserUseCase,
-} from '../../../src/application/use-cases/login-user.js';
-import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.js';
+} from '../../../src/application/use-cases/login-user.ts';
+import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.ts';
 
 describe('LoginUserUseCase', () => {
   const userRepository = {

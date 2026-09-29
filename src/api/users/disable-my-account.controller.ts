@@ -13,10 +13,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ErrorResponseModel } from '../openapi/api-models.js';
-import { DISABLE_ACCOUNT_USE_CASE } from '../../application/ports/dependency-tokens.js';
-import { DisableAccountUseCase } from '../../application/use-cases/disable-account.js';
-import { SessionValidationError } from '../../application/use-cases/validate-session.js';
+import { ErrorResponseModel } from '../openapi/api-models.ts';
+import { DISABLE_ACCOUNT_USE_CASE } from '../../application/ports/dependency-tokens.ts';
+import { DisableAccountUseCase } from '../../application/use-cases/disable-account.ts';
+import { SessionValidationError } from '../../application/use-cases/validate-session.ts';
 
 const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
 

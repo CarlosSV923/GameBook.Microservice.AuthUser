@@ -3,7 +3,7 @@ import {
   scrypt as scryptCallback,
   timingSafeEqual,
 } from 'node:crypto';
-import type { PasswordHasher } from '../../application/ports/password-hasher.js';
+import type { PasswordHasher } from '../../application/ports/password-hasher.ts';
 
 const HASH_PREFIX = 'scrypt';
 const COST = 16_384;
