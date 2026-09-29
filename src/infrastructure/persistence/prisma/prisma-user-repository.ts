@@ -1,8 +1,8 @@
-import type { UserRepository } from '../../../domain/users/user-repository.js';
-import { EmailAlreadyRegisteredError } from '../../../domain/users/email-already-registered-error.js';
-import { User, type UserPersistence } from '../../../domain/users/user.js';
-import type { EmailAddress } from '../../../domain/users/email-address.js';
-import type { PrismaClient } from './generated/client.js';
+import type { UserRepository } from '../../../domain/users/user-repository.ts';
+import { EmailAlreadyRegisteredError } from '../../../domain/users/email-already-registered-error.ts';
+import { User, type UserPersistence } from '../../../domain/users/user.ts';
+import type { EmailAddress } from '../../../domain/users/email-address.ts';
+import type { PrismaClient } from './generated/client.ts';
 
 export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaClient) {}

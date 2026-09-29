@@ -3,12 +3,12 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.js';
-import { createValidationPipe } from '../../src/api/http/validation-pipe.js';
-import { REGISTER_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
-import { RegisterUserController } from '../../src/api/auth/register-user.controller.js';
-import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.js';
-import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.js';
+import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
+import { createValidationPipe } from '../../src/api/http/validation-pipe.ts';
+import { REGISTER_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
+import { RegisterUserController } from '../../src/api/auth/register-user.controller.ts';
+import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.ts';
+import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.ts';
 
 describe('POST /v1/auth/register', () => {
   let app: INestApplication<App>;

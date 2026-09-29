@@ -1,4 +1,4 @@
-import { ScryptPasswordHasher } from '../../../../src/infrastructure/cryptography/scrypt-password-hasher.js';
+import { ScryptPasswordHasher } from '../../../../src/infrastructure/cryptography/scrypt-password-hasher.ts';
 
 describe('ScryptPasswordHasher', () => {
   it('creates salted hashes and verifies only the original password', async () => {

@@ -1,9 +1,9 @@
-import { EmailAddress } from '../../../src/domain/users/email-address.js';
-import { EmailAlreadyRegisteredError } from '../../../src/domain/users/email-already-registered-error.js';
-import type { UserRepository } from '../../../src/domain/users/user-repository.js';
-import { RegisterUserUseCase } from '../../../src/application/use-cases/register-user.js';
-import type { PasswordHasher } from '../../../src/application/ports/password-hasher.js';
-import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.js';
+import { EmailAddress } from '../../../src/domain/users/email-address.ts';
+import { EmailAlreadyRegisteredError } from '../../../src/domain/users/email-already-registered-error.ts';
+import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
+import { RegisterUserUseCase } from '../../../src/application/use-cases/register-user.ts';
+import type { PasswordHasher } from '../../../src/application/ports/password-hasher.ts';
+import { AccountDisabledError } from '../../../src/domain/users/account-disabled-error.ts';
 
 describe('RegisterUserUseCase', () => {
   const userRepository = {

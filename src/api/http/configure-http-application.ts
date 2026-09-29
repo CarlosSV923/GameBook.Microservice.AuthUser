@@ -1,6 +1,6 @@
 import type { INestApplication } from '@nestjs/common';
-import { createCorsOptions } from './cors-options.js';
-import { configureSwagger } from '../openapi/configure-swagger.js';
+import { createCorsOptions } from './cors-options.ts';
+import { configureSwagger } from '../openapi/configure-swagger.ts';
 
 export function configureHttpApplication(
   application: INestApplication,

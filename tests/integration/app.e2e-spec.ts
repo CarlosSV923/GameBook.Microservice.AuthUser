@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { configureHttpApplication } from '../../src/api/http/configure-http-application.js';
-import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.js';
+import { configureHttpApplication } from '../../src/api/http/configure-http-application.ts';
+import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.ts';
 
 const testKeyPair = generateDevelopmentKeyPair();
 const originalEnvironment = {
@@ -25,7 +25,7 @@ describe('HTTP application (e2e)', () => {
   });
 
   beforeEach(async () => {
-    const { AppModule } = await import('../../src/app.module.js');
+    const { AppModule } = await import('../../src/app.module.ts');
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();

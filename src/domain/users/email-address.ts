@@ -1,4 +1,4 @@
-import { DomainValidationError } from '../shared/domain-validation-error.js';
+import { DomainValidationError } from '../shared/domain-validation-error.ts';
 
 const MAX_EMAIL_LENGTH = 254;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;

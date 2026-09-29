@@ -1,8 +1,8 @@
-import type { UserRepository } from '../../domain/users/user-repository.js';
+import type { UserRepository } from '../../domain/users/user-repository.ts';
 import {
   SessionValidationError,
   type ValidateSessionUseCase,
-} from './validate-session.js';
+} from './validate-session.ts';
 
 export class DisableAccountUseCase {
   constructor(

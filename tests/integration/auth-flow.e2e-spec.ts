@@ -3,17 +3,17 @@ import type { INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { configureHttpApplication } from '../../src/api/http/configure-http-application.js';
+import { configureHttpApplication } from '../../src/api/http/configure-http-application.ts';
 import {
   JWT_SIGNER,
   USER_REPOSITORY,
-} from '../../src/application/ports/dependency-tokens.js';
-import type { JwtSigner } from '../../src/application/ports/jwt-ports.js';
-import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.js';
-import type { EmailAddress } from '../../src/domain/users/email-address.js';
-import type { UserRepository } from '../../src/domain/users/user-repository.js';
-import { User } from '../../src/domain/users/user.js';
-import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.js';
+} from '../../src/application/ports/dependency-tokens.ts';
+import type { JwtSigner } from '../../src/application/ports/jwt-ports.ts';
+import { EmailAlreadyRegisteredError } from '../../src/domain/users/email-already-registered-error.ts';
+import type { EmailAddress } from '../../src/domain/users/email-address.ts';
+import type { UserRepository } from '../../src/domain/users/user-repository.ts';
+import { User } from '../../src/domain/users/user.ts';
+import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.ts';
 
 class InMemoryUserRepository implements UserRepository {
   private readonly users = new Map<string, User>();
@@ -85,7 +85,7 @@ describe('AuthUser real HTTP flow', () => {
     process.env.JWT_ISSUER = 'gamebook-authuser-test';
     process.env.JWT_AUDIENCE = 'gamebook-test';
 
-    const { AppModule } = await import('../../src/app.module.js');
+    const { AppModule } = await import('../../src/app.module.ts');
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })

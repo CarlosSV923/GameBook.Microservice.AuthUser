@@ -10,16 +10,16 @@ import {
   REGISTER_USER_USE_CASE,
   USER_REPOSITORY,
   VALIDATE_SESSION_USE_CASE,
-} from './ports/dependency-tokens.js';
-import type { JwtSigner, JwtVerifier } from './ports/jwt-ports.js';
-import type { PasswordHasher } from './ports/password-hasher.js';
-import type { UserRepository } from '../domain/users/user-repository.js';
-import { ChangePasswordUseCase } from './use-cases/change-password.js';
-import { DisableAccountUseCase } from './use-cases/disable-account.js';
-import { LoginUserUseCase } from './use-cases/login-user.js';
-import { RegisterUserUseCase } from './use-cases/register-user.js';
-import { ValidateSessionUseCase } from './use-cases/validate-session.js';
-import { InfrastructureModule } from '../infrastructure/infrastructure.module.js';
+} from './ports/dependency-tokens.ts';
+import type { JwtSigner, JwtVerifier } from './ports/jwt-ports.ts';
+import type { PasswordHasher } from './ports/password-hasher.ts';
+import type { UserRepository } from '../domain/users/user-repository.ts';
+import { ChangePasswordUseCase } from './use-cases/change-password.ts';
+import { DisableAccountUseCase } from './use-cases/disable-account.ts';
+import { LoginUserUseCase } from './use-cases/login-user.ts';
+import { RegisterUserUseCase } from './use-cases/register-user.ts';
+import { ValidateSessionUseCase } from './use-cases/validate-session.ts';
+import { InfrastructureModule } from '../infrastructure/infrastructure.module.ts';
 
 @Module({
   imports: [InfrastructureModule],

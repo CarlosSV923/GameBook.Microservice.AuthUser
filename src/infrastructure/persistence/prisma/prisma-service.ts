@@ -1,8 +1,8 @@
 import { Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from './generated/client.js';
-import type { AuthEnvironment } from '../../config/auth-runtime-config.js';
-import { createPrismaClient } from './prisma-client.js';
+import { PrismaClient } from './generated/client.ts';
+import type { AuthEnvironment } from '../../config/auth-runtime-config.ts';
+import { createPrismaClient } from './prisma-client.ts';
 
 @Injectable()
 export class PrismaService implements OnApplicationShutdown {

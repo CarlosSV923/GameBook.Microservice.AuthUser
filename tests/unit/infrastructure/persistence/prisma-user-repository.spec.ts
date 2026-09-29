@@ -1,8 +1,8 @@
-import type { PrismaClient } from '../../../../src/infrastructure/persistence/prisma/generated/client.js';
-import { EmailAddress } from '../../../../src/domain/users/email-address.js';
-import { EmailAlreadyRegisteredError } from '../../../../src/domain/users/email-already-registered-error.js';
-import { User } from '../../../../src/domain/users/user.js';
-import { PrismaUserRepository } from '../../../../src/infrastructure/persistence/prisma/prisma-user-repository.js';
+import type { PrismaClient } from '../../../../src/infrastructure/persistence/prisma/generated/client.ts';
+import { EmailAddress } from '../../../../src/domain/users/email-address.ts';
+import { EmailAlreadyRegisteredError } from '../../../../src/domain/users/email-already-registered-error.ts';
+import { User } from '../../../../src/domain/users/user.ts';
+import { PrismaUserRepository } from '../../../../src/infrastructure/persistence/prisma/prisma-user-repository.ts';
 
 describe('PrismaUserRepository', () => {
   const userDelegate = {

@@ -5,17 +5,17 @@ import {
   JWT_VERIFIER,
   PASSWORD_HASHER,
   USER_REPOSITORY,
-} from '../application/ports/dependency-tokens.js';
-import type { JwtSigner, JwtVerifier } from '../application/ports/jwt-ports.js';
-import type { UserRepository } from '../domain/users/user-repository.js';
+} from '../application/ports/dependency-tokens.ts';
+import type { JwtSigner, JwtVerifier } from '../application/ports/jwt-ports.ts';
+import type { UserRepository } from '../domain/users/user-repository.ts';
 import {
   derivePublicKey,
   RsaJwtSigner,
   RsaJwtVerifier,
-} from './cryptography/rsa-jwt.js';
-import { ScryptPasswordHasher } from './cryptography/scrypt-password-hasher.js';
-import { PrismaService } from './persistence/prisma/prisma-service.js';
-import { PrismaUserRepository } from './persistence/prisma/prisma-user-repository.js';
+} from './cryptography/rsa-jwt.ts';
+import { ScryptPasswordHasher } from './cryptography/scrypt-password-hasher.ts';
+import { PrismaService } from './persistence/prisma/prisma-service.ts';
+import { PrismaUserRepository } from './persistence/prisma/prisma-user-repository.ts';
 
 @Module({
   providers: [

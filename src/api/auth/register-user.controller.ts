@@ -10,15 +10,15 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   ErrorResponseModel,
   UserResponseModel,
-} from '../openapi/api-models.js';
-import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.js';
-import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
-import { REGISTER_USER_USE_CASE } from '../../application/ports/dependency-tokens.js';
+} from '../openapi/api-models.ts';
+import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.ts';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.ts';
+import { REGISTER_USER_USE_CASE } from '../../application/ports/dependency-tokens.ts';
 import {
   RegisterUserUseCase,
   RegistrationValidationError,
-} from '../../application/use-cases/register-user.js';
-import { RegisterUserRequest } from './register-user.dto.js';
+} from '../../application/use-cases/register-user.ts';
+import { RegisterUserRequest } from './register-user.dto.ts';
 
 @Controller('v1/auth')
 @ApiTags('Authentication')

@@ -16,15 +16,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ErrorResponseModel } from '../openapi/api-models.js';
-import { CHANGE_PASSWORD_USE_CASE } from '../../application/ports/dependency-tokens.js';
+import { ErrorResponseModel } from '../openapi/api-models.ts';
+import { CHANGE_PASSWORD_USE_CASE } from '../../application/ports/dependency-tokens.ts';
 import {
   ChangePasswordUseCase,
   ChangePasswordValidationError,
   InvalidCurrentPasswordError,
-} from '../../application/use-cases/change-password.js';
-import { SessionValidationError } from '../../application/use-cases/validate-session.js';
-import { ChangeMyPasswordRequest } from './change-my-password.dto.js';
+} from '../../application/use-cases/change-password.ts';
+import { SessionValidationError } from '../../application/use-cases/validate-session.ts';
+import { ChangeMyPasswordRequest } from './change-my-password.dto.ts';
 
 const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
 
