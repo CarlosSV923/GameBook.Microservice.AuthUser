@@ -111,3 +111,4 @@ El despliegue de producción se gestiona mediante Render. El repositorio no cont
 
 - [GameBook.Microservice.Game](https://github.com/CarlosSV923/GameBook.Microservice.Game)
 - [GameBook.Frontend](https://github.com/CarlosSV923/GameBook.Frontend)
+- [Documentación de GameBook.System](https://github.com/CarlosSV923/GameBook.System/blob/main/README.es.md)
