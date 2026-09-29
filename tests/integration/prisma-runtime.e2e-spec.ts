@@ -1,6 +1,6 @@
-import { createPrismaClient } from '../../src/infrastructure/persistence/prisma/prisma-client.js';
-import { validateAuthConfiguration } from '../../src/infrastructure/config/auth-runtime-config.js';
-import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.js';
+import { createPrismaClient } from '../../src/infrastructure/persistence/prisma/prisma-client.ts';
+import { validateAuthConfiguration } from '../../src/infrastructure/config/auth-runtime-config.ts';
+import { generateDevelopmentKeyPair } from '../../src/infrastructure/cryptography/rsa-jwt.ts';
 
 describe('AuthUser Prisma runtime base', () => {
   it('validates runtime configuration and creates a Prisma client without migration credentials', async () => {

@@ -1,11 +1,11 @@
-import { DomainValidationError } from '../../domain/shared/domain-validation-error.js';
-import { PasswordPolicy } from '../../domain/users/password-policy.js';
-import type { UserRepository } from '../../domain/users/user-repository.js';
-import type { PasswordHasher } from '../ports/password-hasher.js';
+import { DomainValidationError } from '../../domain/shared/domain-validation-error.ts';
+import { PasswordPolicy } from '../../domain/users/password-policy.ts';
+import type { UserRepository } from '../../domain/users/user-repository.ts';
+import type { PasswordHasher } from '../ports/password-hasher.ts';
 import {
   SessionValidationError,
   type ValidateSessionUseCase,
-} from './validate-session.js';
+} from './validate-session.ts';
 
 export interface ChangePasswordInput {
   readonly token: string;

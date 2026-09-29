@@ -1,15 +1,15 @@
-import type { JwtClaims } from '../../../src/application/ports/jwt-ports.js';
-import type { PasswordHasher } from '../../../src/application/ports/password-hasher.js';
+import type { JwtClaims } from '../../../src/application/ports/jwt-ports.ts';
+import type { PasswordHasher } from '../../../src/application/ports/password-hasher.ts';
 import {
   ChangePasswordUseCase,
   InvalidCurrentPasswordError,
-} from '../../../src/application/use-cases/change-password.js';
+} from '../../../src/application/use-cases/change-password.ts';
 import {
   SessionValidationError,
   type ValidateSessionUseCase,
-} from '../../../src/application/use-cases/validate-session.js';
-import type { UserRepository } from '../../../src/domain/users/user-repository.js';
-import { User } from '../../../src/domain/users/user.js';
+} from '../../../src/application/use-cases/validate-session.ts';
+import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
+import { User } from '../../../src/domain/users/user.ts';
 
 describe('ChangePasswordUseCase', () => {
   const claims: JwtClaims = {

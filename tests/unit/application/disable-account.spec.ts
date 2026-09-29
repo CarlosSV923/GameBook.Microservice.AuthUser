@@ -1,11 +1,11 @@
-import type { JwtClaims } from '../../../src/application/ports/jwt-ports.js';
-import { DisableAccountUseCase } from '../../../src/application/use-cases/disable-account.js';
+import type { JwtClaims } from '../../../src/application/ports/jwt-ports.ts';
+import { DisableAccountUseCase } from '../../../src/application/use-cases/disable-account.ts';
 import {
   SessionValidationError,
   type ValidateSessionUseCase,
-} from '../../../src/application/use-cases/validate-session.js';
-import type { UserRepository } from '../../../src/domain/users/user-repository.js';
-import { User } from '../../../src/domain/users/user.js';
+} from '../../../src/application/use-cases/validate-session.ts';
+import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
+import { User } from '../../../src/domain/users/user.ts';
 
 describe('DisableAccountUseCase', () => {
   const claims: JwtClaims = {

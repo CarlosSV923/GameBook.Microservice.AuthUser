@@ -1,5 +1,5 @@
 import { BadRequestException, HttpStatus } from '@nestjs/common';
-import { ApiExceptionFilter } from '../../../../src/api/http/api-exception.filter.js';
+import { ApiExceptionFilter } from '../../../../src/api/http/api-exception.filter.ts';
 
 function createHost() {
   const response = {

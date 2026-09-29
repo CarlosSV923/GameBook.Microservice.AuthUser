@@ -12,14 +12,14 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   ErrorResponseModel,
   LoginResponseModel,
-} from '../openapi/api-models.js';
-import { LOGIN_USER_USE_CASE } from '../../application/ports/dependency-tokens.js';
+} from '../openapi/api-models.ts';
+import { LOGIN_USER_USE_CASE } from '../../application/ports/dependency-tokens.ts';
 import {
   InvalidCredentialsError,
   LoginUserUseCase,
-} from '../../application/use-cases/login-user.js';
-import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
-import { LoginUserRequest } from './login-user.dto.js';
+} from '../../application/use-cases/login-user.ts';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.ts';
+import { LoginUserRequest } from './login-user.dto.ts';
 
 @Controller('v1/auth')
 @ApiTags('Authentication')

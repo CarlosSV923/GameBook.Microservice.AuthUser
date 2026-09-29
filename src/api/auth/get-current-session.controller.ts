@@ -16,12 +16,12 @@ import {
 import {
   ErrorResponseModel,
   SessionResponseModel,
-} from '../openapi/api-models.js';
-import { VALIDATE_SESSION_USE_CASE } from '../../application/ports/dependency-tokens.js';
+} from '../openapi/api-models.ts';
+import { VALIDATE_SESSION_USE_CASE } from '../../application/ports/dependency-tokens.ts';
 import {
   SessionValidationError,
   ValidateSessionUseCase,
-} from '../../application/use-cases/validate-session.js';
+} from '../../application/use-cases/validate-session.ts';
 
 const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
 

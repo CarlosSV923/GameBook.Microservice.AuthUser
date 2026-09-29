@@ -1,11 +1,11 @@
-import { DomainValidationError } from '../../domain/shared/domain-validation-error.js';
-import { EmailAddress } from '../../domain/users/email-address.js';
-import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.js';
-import { PasswordPolicy } from '../../domain/users/password-policy.js';
-import { User } from '../../domain/users/user.js';
-import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
-import type { UserRepository } from '../../domain/users/user-repository.js';
-import type { PasswordHasher } from '../ports/password-hasher.js';
+import { DomainValidationError } from '../../domain/shared/domain-validation-error.ts';
+import { EmailAddress } from '../../domain/users/email-address.ts';
+import { EmailAlreadyRegisteredError } from '../../domain/users/email-already-registered-error.ts';
+import { PasswordPolicy } from '../../domain/users/password-policy.ts';
+import { User } from '../../domain/users/user.ts';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.ts';
+import type { UserRepository } from '../../domain/users/user-repository.ts';
+import type { PasswordHasher } from '../ports/password-hasher.ts';
 
 export interface RegisterUserInput {
   readonly fullName: string;

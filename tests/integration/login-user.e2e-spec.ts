@@ -3,12 +3,12 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.js';
-import { createValidationPipe } from '../../src/api/http/validation-pipe.js';
-import { LOGIN_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
-import { LoginUserController } from '../../src/api/auth/login-user.controller.js';
-import { InvalidCredentialsError } from '../../src/application/use-cases/login-user.js';
-import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.js';
+import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
+import { createValidationPipe } from '../../src/api/http/validation-pipe.ts';
+import { LOGIN_USER_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
+import { LoginUserController } from '../../src/api/auth/login-user.controller.ts';
+import { InvalidCredentialsError } from '../../src/application/use-cases/login-user.ts';
+import { AccountDisabledError } from '../../src/domain/users/account-disabled-error.ts';
 
 describe('POST /v1/auth/login', () => {
   let app: INestApplication<App>;

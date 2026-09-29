@@ -1,5 +1,5 @@
-import { EmailAddress } from './email-address.js';
-import { User } from './user.js';
+import { EmailAddress } from './email-address.ts';
+import { User } from './user.ts';
 
 export interface UserRepository {
   findById(id: string): Promise<User | null>;

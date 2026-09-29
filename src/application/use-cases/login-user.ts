@@ -1,8 +1,8 @@
-import { EmailAddress } from '../../domain/users/email-address.js';
-import type { JwtSigner } from '../ports/jwt-ports.js';
-import type { PasswordHasher } from '../ports/password-hasher.js';
-import type { UserRepository } from '../../domain/users/user-repository.js';
-import { AccountDisabledError } from '../../domain/users/account-disabled-error.js';
+import { EmailAddress } from '../../domain/users/email-address.ts';
+import type { JwtSigner } from '../ports/jwt-ports.ts';
+import type { PasswordHasher } from '../ports/password-hasher.ts';
+import type { UserRepository } from '../../domain/users/user-repository.ts';
+import { AccountDisabledError } from '../../domain/users/account-disabled-error.ts';
 
 export const JWT_EXPIRES_IN_SECONDS = 3600;
 

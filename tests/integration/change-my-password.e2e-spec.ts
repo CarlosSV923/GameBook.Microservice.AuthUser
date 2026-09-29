@@ -3,15 +3,15 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types';
-import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.js';
-import { createValidationPipe } from '../../src/api/http/validation-pipe.js';
-import { ChangeMyPasswordController } from '../../src/api/users/change-my-password.controller.js';
-import { CHANGE_PASSWORD_USE_CASE } from '../../src/application/ports/dependency-tokens.js';
+import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
+import { createValidationPipe } from '../../src/api/http/validation-pipe.ts';
+import { ChangeMyPasswordController } from '../../src/api/users/change-my-password.controller.ts';
+import { CHANGE_PASSWORD_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
 import {
   ChangePasswordValidationError,
   InvalidCurrentPasswordError,
-} from '../../src/application/use-cases/change-password.js';
-import { SessionValidationError } from '../../src/application/use-cases/validate-session.js';
+} from '../../src/application/use-cases/change-password.ts';
+import { SessionValidationError } from '../../src/application/use-cases/validate-session.ts';
 
 describe('PATCH /v1/users/me/password', () => {
   let app: INestApplication<App>;

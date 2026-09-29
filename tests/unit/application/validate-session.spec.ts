@@ -3,13 +3,13 @@ import {
   JwtVerificationError,
   type JwtClaims,
   type JwtVerifier,
-} from '../../../src/application/ports/jwt-ports.js';
+} from '../../../src/application/ports/jwt-ports.ts';
 import {
   SessionValidationError,
   ValidateSessionUseCase,
-} from '../../../src/application/use-cases/validate-session.js';
-import type { UserRepository } from '../../../src/domain/users/user-repository.js';
-import { User } from '../../../src/domain/users/user.js';
+} from '../../../src/application/use-cases/validate-session.ts';
+import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
+import { User } from '../../../src/domain/users/user.ts';
 
 describe('ValidateSessionUseCase', () => {
   const jwtVerifier = {

@@ -1,5 +1,5 @@
-import { generateDevelopmentKeyPair } from '../../../../src/infrastructure/cryptography/rsa-jwt.js';
-import { validateAuthConfiguration } from '../../../../src/infrastructure/config/auth-runtime-config.js';
+import { generateDevelopmentKeyPair } from '../../../../src/infrastructure/cryptography/rsa-jwt.ts';
+import { validateAuthConfiguration } from '../../../../src/infrastructure/config/auth-runtime-config.ts';
 
 describe('validateAuthConfiguration', () => {
   it('loads runtime values and restores escaped PEM newlines', () => {

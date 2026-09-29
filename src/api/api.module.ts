@@ -1,16 +1,16 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
-import { ChangeMyPasswordController } from './users/change-my-password.controller.js';
-import { DisableMyAccountController } from './users/disable-my-account.controller.js';
-import { GetCurrentSessionController } from './auth/get-current-session.controller.js';
-import { LoginUserController } from './auth/login-user.controller.js';
-import { RegisterUserController } from './auth/register-user.controller.js';
-import { HealthController } from './health/health.controller.js';
-import { ApiExceptionFilter } from './http/api-exception.filter.js';
-import { RequestIdMiddleware } from './http/request-id.js';
-import { RequestLoggingMiddleware } from './http/request-logging.middleware.js';
-import { createValidationPipe } from './http/validation-pipe.js';
-import { ApplicationModule } from '../application/application.module.js';
+import { ChangeMyPasswordController } from './users/change-my-password.controller.ts';
+import { DisableMyAccountController } from './users/disable-my-account.controller.ts';
+import { GetCurrentSessionController } from './auth/get-current-session.controller.ts';
+import { LoginUserController } from './auth/login-user.controller.ts';
+import { RegisterUserController } from './auth/register-user.controller.ts';
+import { HealthController } from './health/health.controller.ts';
+import { ApiExceptionFilter } from './http/api-exception.filter.ts';
+import { RequestIdMiddleware } from './http/request-id.ts';
+import { RequestLoggingMiddleware } from './http/request-logging.middleware.ts';
+import { createValidationPipe } from './http/validation-pipe.ts';
+import { ApplicationModule } from '../application/application.module.ts';
 
 @Module({
   imports: [ApplicationModule],
