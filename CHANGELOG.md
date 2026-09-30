@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.3.0...gamebook-microservice-authuser-v0.4.0) (2026-09-30)
+
+
+### Features
+
+* add local Compose image ([ce4b205](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/ce4b205a517a17dd845e18dd22ee054af41e5247))
+* **authuser:** add compose integration image ([ed6c687](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/commit/ed6c6874e19718dcebd5d45e73e8b3f281c8cfdc))
+
 ## [0.3.0](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/compare/gamebook-microservice-authuser-v0.2.0...gamebook-microservice-authuser-v0.3.0) (2026-09-27)
 
 
