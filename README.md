@@ -63,6 +63,10 @@ pnpm start:dev
 
 AuthUser listens on local port 3001 by default.
 
+## Local Docker image
+
+The repository includes the production-style `Dockerfile` used by the integration Compose in [GameBook.System](https://github.com/CarlosSV923/GameBook.System). The Compose supplies the local PostgreSQL runtime URL and waits for the database healthcheck; Prisma migrations remain an explicit command documented by the system repository.
+
 ## Production deployment
 
 AuthUser is deployed on Render. The current public service URL is [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), with Swagger UI at [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) and the OpenAPI document at [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json). The production frontend is [`https://gamebook-frontend.vercel.app`](https://gamebook-frontend.vercel.app), and the Game service is [`https://gamebook-microservice-game.onrender.com`](https://gamebook-microservice-game.onrender.com).
