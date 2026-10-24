@@ -59,7 +59,6 @@ describe('HTTP application (e2e)', () => {
     const response = await request(app.getHttpServer())
       .get('/docs/openapi.json')
       .expect(200);
-
     expect(response.body).toMatchObject({
       openapi: '3.0.0',
       info: {
