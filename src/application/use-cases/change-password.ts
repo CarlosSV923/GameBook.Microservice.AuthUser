@@ -2,13 +2,11 @@ import { DomainValidationError } from '../../domain/shared/domain-validation-err
 import { PasswordPolicy } from '../../domain/users/password-policy.ts';
 import type { UserRepository } from '../../domain/users/user-repository.ts';
 import type { PasswordHasher } from '../ports/password-hasher.ts';
-import {
-  SessionValidationError,
-  type ValidateSessionUseCase,
-} from './validate-session.ts';
+import type { AuthenticatedIdentity } from '../authenticated-identity.ts';
+import { SessionValidationError } from './validate-session.ts';
 
 export interface ChangePasswordInput {
-  readonly token: string;
+  readonly session: AuthenticatedIdentity;
   readonly currentPassword: string;
   readonly newPassword: string;
 }
@@ -32,16 +30,24 @@ export class ChangePasswordValidationError extends Error {
 
 export class ChangePasswordUseCase {
   constructor(
-    private readonly validateSession: ValidateSessionUseCase,
     private readonly passwordHasher: PasswordHasher,
     private readonly userRepository: UserRepository,
   ) {}
 
   async execute(input: ChangePasswordInput): Promise<void> {
-    const session = await this.validateSession.validate(input.token);
+    const user = await this.userRepository.findById(input.session.userId);
+    if (
+      !user ||
+      user.isDisabled ||
+      user.sessionVersion !== input.session.sessionVersion
+    ) {
+      throw new SessionValidationError(
+        user?.isDisabled ? 'ACCOUNT_DISABLED' : 'SESSION_REVOKED',
+      );
+    }
     const currentPasswordMatches = await this.passwordHasher.verify(
       input.currentPassword,
-      session.user.passwordHash,
+      user.passwordHash,
     );
 
     if (!currentPasswordMatches) {
@@ -59,12 +65,9 @@ export class ChangePasswordUseCase {
     }
 
     const passwordHash = await this.passwordHasher.hash(input.newPassword);
-    const expectedSessionVersion = session.user.sessionVersion;
-    session.user.changePassword(passwordHash);
-    const saved = await this.userRepository.save(
-      session.user,
-      expectedSessionVersion,
-    );
+    const expectedSessionVersion = input.session.sessionVersion;
+    user.changePassword(passwordHash);
+    const saved = await this.userRepository.save(user, expectedSessionVersion);
 
     if (!saved) {
       throw new SessionValidationError('SESSION_REVOKED');

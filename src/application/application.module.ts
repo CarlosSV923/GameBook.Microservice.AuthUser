@@ -58,24 +58,16 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module.ts
     {
       provide: CHANGE_PASSWORD_USE_CASE,
       useFactory: (
-        validateSession: ValidateSessionUseCase,
         passwordHasher: PasswordHasher,
         userRepository: UserRepository,
-      ) =>
-        new ChangePasswordUseCase(
-          validateSession,
-          passwordHasher,
-          userRepository,
-        ),
-      inject: [VALIDATE_SESSION_USE_CASE, PASSWORD_HASHER, USER_REPOSITORY],
+      ) => new ChangePasswordUseCase(passwordHasher, userRepository),
+      inject: [PASSWORD_HASHER, USER_REPOSITORY],
     },
     {
       provide: DISABLE_ACCOUNT_USE_CASE,
-      useFactory: (
-        validateSession: ValidateSessionUseCase,
-        userRepository: UserRepository,
-      ) => new DisableAccountUseCase(validateSession, userRepository),
-      inject: [VALIDATE_SESSION_USE_CASE, USER_REPOSITORY],
+      useFactory: (userRepository: UserRepository) =>
+        new DisableAccountUseCase(userRepository),
+      inject: [USER_REPOSITORY],
     },
   ],
   exports: [
