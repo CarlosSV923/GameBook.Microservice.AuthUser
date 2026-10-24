@@ -71,7 +71,7 @@ export class RegisterUserUseCase {
     const user = this.createUser(input, email, passwordHash);
 
     try {
-      await this.userRepository.save(user);
+      await this.userRepository.create(user);
     } catch (error) {
       if (error instanceof EmailAlreadyRegisteredError) {
         throw error;

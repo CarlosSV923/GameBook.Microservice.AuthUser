@@ -113,7 +113,7 @@ export class User {
     return this.state.isDisabled;
   }
 
-  changePasswordHash(passwordHash: string): void {
+  changePassword(passwordHash: string): void {
     if (passwordHash.trim().length === 0) {
       throw new DomainValidationError(
         'PASSWORD_HASH_INVALID',
