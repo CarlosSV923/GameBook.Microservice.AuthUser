@@ -16,36 +16,33 @@ describe('DisableAccountUseCase', () => {
     iss: 'gamebook-auth',
     aud: 'gamebook-services',
   };
-  const user = User.rehydrate({
-    id: claims.sub,
-    fullName: 'Ada Lovelace',
-    email: 'ada@example.com',
-    passwordHash: 'scrypt$fixture',
-    sessionVersion: claims.ver,
-  });
+  let user = createUser();
   const validateSession = {
     validate: vi.fn(),
   } as unknown as ValidateSessionUseCase;
   const userRepository = {
-    disable: vi.fn(),
+    save: vi.fn(),
   } as unknown as UserRepository;
   const useCase = new DisableAccountUseCase(validateSession, userRepository);
 
   beforeEach(() => {
     vi.clearAllMocks();
+    user = createUser();
     validateSession.validate = vi.fn().mockResolvedValue({ user, claims });
-    userRepository.disable = vi.fn().mockResolvedValue(true);
+    userRepository.save = vi.fn().mockResolvedValue(true);
   });
 
   it('disables the account using the authenticated session version', async () => {
     await expect(useCase.execute('signed.jwt.token')).resolves.toBeUndefined();
 
     expect(validateSession.validate).toHaveBeenCalledWith('signed.jwt.token');
-    expect(userRepository.disable).toHaveBeenCalledWith(user.id, claims.ver);
+    expect(user.isDisabled).toBe(true);
+    expect(user.sessionVersion).toBe(claims.ver + 1);
+    expect(userRepository.save).toHaveBeenCalledWith(user, claims.ver);
   });
 
   it('reports revocation when the atomic update loses a concurrent version race', async () => {
-    userRepository.disable = vi.fn().mockResolvedValue(false);
+    userRepository.save = vi.fn().mockResolvedValue(false);
 
     await expect(useCase.execute('signed.jwt.token')).rejects.toEqual(
       expect.objectContaining({ code: 'SESSION_REVOKED' }),
@@ -60,6 +57,16 @@ describe('DisableAccountUseCase', () => {
     await expect(useCase.execute('disabled.jwt.token')).rejects.toEqual(
       expect.objectContaining({ code: 'ACCOUNT_DISABLED' }),
     );
-    expect(userRepository.disable).not.toHaveBeenCalled();
+    expect(userRepository.save).not.toHaveBeenCalled();
   });
+
+  function createUser(): User {
+    return User.rehydrate({
+      id: claims.sub,
+      fullName: 'Ada Lovelace',
+      email: 'ada@example.com',
+      passwordHash: 'scrypt$fixture',
+      sessionVersion: claims.ver,
+    });
+  }
 });

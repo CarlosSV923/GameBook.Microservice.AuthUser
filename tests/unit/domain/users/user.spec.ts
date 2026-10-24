@@ -23,7 +23,7 @@ describe('User', () => {
   it('increments the session version when the password hash changes', () => {
     const user = User.create(userInput);
 
-    user.changePasswordHash('new-argon2id-hash');
+    user.changePassword('new-argon2id-hash');
 
     expect(user.passwordHash).toBe('new-argon2id-hash');
     expect(user.sessionVersion).toBe(2);
