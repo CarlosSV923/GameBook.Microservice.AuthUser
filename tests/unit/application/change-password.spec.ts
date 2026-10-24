@@ -20,13 +20,7 @@ describe('ChangePasswordUseCase', () => {
     iss: 'gamebook-auth',
     aud: 'gamebook-services',
   };
-  const user = User.rehydrate({
-    id: claims.sub,
-    fullName: 'Ada Lovelace',
-    email: 'ada@example.com',
-    passwordHash: 'scrypt$old',
-    sessionVersion: claims.ver,
-  });
+  let user = createUser();
   const validateSession = {
     validate: vi.fn(),
   } as unknown as ValidateSessionUseCase;
@@ -35,7 +29,7 @@ describe('ChangePasswordUseCase', () => {
     verify: vi.fn(),
   } as unknown as PasswordHasher;
   const userRepository = {
-    replacePassword: vi.fn(),
+    save: vi.fn(),
   } as unknown as UserRepository;
   const useCase = new ChangePasswordUseCase(
     validateSession,
@@ -45,13 +39,14 @@ describe('ChangePasswordUseCase', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    user = createUser();
     validateSession.validate = vi.fn().mockResolvedValue({ user, claims });
     passwordHasher.verify = vi.fn().mockResolvedValue(true);
     passwordHasher.hash = vi.fn().mockResolvedValue('scrypt$new');
-    userRepository.replacePassword = vi.fn().mockResolvedValue(true);
+    userRepository.save = vi.fn().mockResolvedValue(true);
   });
 
-  it('replaces the hash atomically using the authenticated session version', async () => {
+  it('changes the hash on the aggregate and saves against its prior version', async () => {
     await expect(
       useCase.execute({
         token: 'signed.jwt.token',
@@ -66,11 +61,9 @@ describe('ChangePasswordUseCase', () => {
       'scrypt$old',
     );
     expect(passwordHasher.hash).toHaveBeenCalledWith('NewPassword@2026');
-    expect(userRepository.replacePassword).toHaveBeenCalledWith(
-      user.id,
-      'scrypt$new',
-      claims.ver,
-    );
+    expect(user.passwordHash).toBe('scrypt$new');
+    expect(user.sessionVersion).toBe(claims.ver + 1);
+    expect(userRepository.save).toHaveBeenCalledWith(user, claims.ver);
   });
 
   it('rejects an incorrect current password without changing the hash', async () => {
@@ -85,7 +78,7 @@ describe('ChangePasswordUseCase', () => {
     ).rejects.toBeInstanceOf(InvalidCurrentPasswordError);
 
     expect(passwordHasher.hash).not.toHaveBeenCalled();
-    expect(userRepository.replacePassword).not.toHaveBeenCalled();
+    expect(userRepository.save).not.toHaveBeenCalled();
   });
 
   it('rejects a new password that does not meet the policy', async () => {
@@ -103,11 +96,11 @@ describe('ChangePasswordUseCase', () => {
     );
 
     expect(passwordHasher.hash).not.toHaveBeenCalled();
-    expect(userRepository.replacePassword).not.toHaveBeenCalled();
+    expect(userRepository.save).not.toHaveBeenCalled();
   });
 
   it('reports revocation when the atomic update loses a concurrent version race', async () => {
-    userRepository.replacePassword = vi.fn().mockResolvedValue(false);
+    userRepository.save = vi.fn().mockResolvedValue(false);
 
     await expect(
       useCase.execute({
@@ -133,4 +126,14 @@ describe('ChangePasswordUseCase', () => {
 
     expect(passwordHasher.verify).not.toHaveBeenCalled();
   });
+
+  function createUser(): User {
+    return User.rehydrate({
+      id: claims.sub,
+      fullName: 'Ada Lovelace',
+      email: 'ada@example.com',
+      passwordHash: 'scrypt$old',
+      sessionVersion: claims.ver,
+    });
+  }
 });

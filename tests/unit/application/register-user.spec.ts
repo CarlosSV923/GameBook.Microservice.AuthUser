@@ -8,7 +8,7 @@ import { AccountDisabledError } from '../../../src/domain/users/account-disabled
 describe('RegisterUserUseCase', () => {
   const userRepository = {
     findByEmail: vi.fn(),
-    save: vi.fn(),
+    create: vi.fn(),
   } as unknown as UserRepository;
   const passwordHasher = {
     hash: vi.fn(),
@@ -25,7 +25,7 @@ describe('RegisterUserUseCase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     userRepository.findByEmail = vi.fn().mockResolvedValue(null);
-    userRepository.save = vi.fn().mockResolvedValue(undefined);
+    userRepository.create = vi.fn().mockResolvedValue(undefined);
     passwordHasher.hash = vi.fn().mockResolvedValue('scrypt$fixture');
   });
 
@@ -41,7 +41,7 @@ describe('RegisterUserUseCase', () => {
     expect(userRepository.findByEmail).toHaveBeenCalledWith(
       EmailAddress.create('ada@example.com'),
     );
-    expect(userRepository.save).toHaveBeenCalledWith(
+    expect(userRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({
         fullName: 'Ada Lovelace',
         email: 'ada@example.com',
@@ -60,7 +60,7 @@ describe('RegisterUserUseCase', () => {
       EmailAlreadyRegisteredError,
     );
     expect(passwordHasher.hash).not.toHaveBeenCalled();
-    expect(userRepository.save).not.toHaveBeenCalled();
+    expect(userRepository.create).not.toHaveBeenCalled();
   });
 
   it('rejects the email of a disabled account without reactivating it', async () => {
@@ -72,7 +72,7 @@ describe('RegisterUserUseCase', () => {
       AccountDisabledError,
     );
     expect(passwordHasher.hash).not.toHaveBeenCalled();
-    expect(userRepository.save).not.toHaveBeenCalled();
+    expect(userRepository.create).not.toHaveBeenCalled();
   });
 
   it('rejects mismatched password confirmation before hashing', async () => {
@@ -104,7 +104,7 @@ describe('RegisterUserUseCase', () => {
   });
 
   it('preserves a duplicate error raised by the unique constraint race', async () => {
-    userRepository.save = vi
+    userRepository.create = vi
       .fn()
       .mockRejectedValue(new EmailAlreadyRegisteredError());
 

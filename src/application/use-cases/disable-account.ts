@@ -12,12 +12,14 @@ export class DisableAccountUseCase {
 
   async execute(token: string): Promise<void> {
     const session = await this.validateSession.validate(token);
-    const disabled = await this.userRepository.disable(
-      session.user.id,
-      session.claims.ver,
+    const expectedSessionVersion = session.user.sessionVersion;
+    session.user.disable();
+    const saved = await this.userRepository.save(
+      session.user,
+      expectedSessionVersion,
     );
 
-    if (!disabled) {
+    if (!saved) {
       throw new SessionValidationError('SESSION_REVOKED');
     }
   }

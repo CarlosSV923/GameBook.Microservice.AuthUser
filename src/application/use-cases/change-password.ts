@@ -59,13 +59,14 @@ export class ChangePasswordUseCase {
     }
 
     const passwordHash = await this.passwordHasher.hash(input.newPassword);
-    const replaced = await this.userRepository.replacePassword(
-      session.user.id,
-      passwordHash,
-      session.claims.ver,
+    const expectedSessionVersion = session.user.sessionVersion;
+    session.user.changePassword(passwordHash);
+    const saved = await this.userRepository.save(
+      session.user,
+      expectedSessionVersion,
     );
 
-    if (!replaced) {
+    if (!saved) {
       throw new SessionValidationError('SESSION_REVOKED');
     }
   }
