@@ -1,46 +1,31 @@
-import type { JwtClaims } from '../../../src/application/ports/jwt-ports.ts';
 import type { PasswordHasher } from '../../../src/application/ports/password-hasher.ts';
 import {
   ChangePasswordUseCase,
   InvalidCurrentPasswordError,
 } from '../../../src/application/use-cases/change-password.ts';
-import {
-  SessionValidationError,
-  type ValidateSessionUseCase,
-} from '../../../src/application/use-cases/validate-session.ts';
 import type { UserRepository } from '../../../src/domain/users/user-repository.ts';
 import { User } from '../../../src/domain/users/user.ts';
 
 describe('ChangePasswordUseCase', () => {
-  const claims: JwtClaims = {
-    sub: '7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa',
-    ver: 3,
-    iat: 1_700_000_000,
-    exp: 1_700_003_600,
-    iss: 'gamebook-auth',
-    aud: 'gamebook-services',
+  const identity = {
+    userId: '7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa',
+    sessionVersion: 3,
   };
   let user = createUser();
-  const validateSession = {
-    validate: vi.fn(),
-  } as unknown as ValidateSessionUseCase;
   const passwordHasher = {
     hash: vi.fn(),
     verify: vi.fn(),
   } as unknown as PasswordHasher;
   const userRepository = {
+    findById: vi.fn(),
     save: vi.fn(),
   } as unknown as UserRepository;
-  const useCase = new ChangePasswordUseCase(
-    validateSession,
-    passwordHasher,
-    userRepository,
-  );
+  const useCase = new ChangePasswordUseCase(passwordHasher, userRepository);
 
   beforeEach(() => {
     vi.clearAllMocks();
     user = createUser();
-    validateSession.validate = vi.fn().mockResolvedValue({ user, claims });
+    userRepository.findById = vi.fn().mockResolvedValue(user);
     passwordHasher.verify = vi.fn().mockResolvedValue(true);
     passwordHasher.hash = vi.fn().mockResolvedValue('scrypt$new');
     userRepository.save = vi.fn().mockResolvedValue(true);
@@ -49,21 +34,24 @@ describe('ChangePasswordUseCase', () => {
   it('changes the hash on the aggregate and saves against its prior version', async () => {
     await expect(
       useCase.execute({
-        token: 'signed.jwt.token',
+        session: identity,
         currentPassword: 'OldPassword@2026',
         newPassword: 'NewPassword@2026',
       }),
     ).resolves.toBeUndefined();
 
-    expect(validateSession.validate).toHaveBeenCalledWith('signed.jwt.token');
+    expect(userRepository.findById).toHaveBeenCalledWith(identity.userId);
     expect(passwordHasher.verify).toHaveBeenCalledWith(
       'OldPassword@2026',
       'scrypt$old',
     );
     expect(passwordHasher.hash).toHaveBeenCalledWith('NewPassword@2026');
     expect(user.passwordHash).toBe('scrypt$new');
-    expect(user.sessionVersion).toBe(claims.ver + 1);
-    expect(userRepository.save).toHaveBeenCalledWith(user, claims.ver);
+    expect(user.sessionVersion).toBe(identity.sessionVersion + 1);
+    expect(userRepository.save).toHaveBeenCalledWith(
+      user,
+      identity.sessionVersion,
+    );
   });
 
   it('rejects an incorrect current password without changing the hash', async () => {
@@ -71,7 +59,7 @@ describe('ChangePasswordUseCase', () => {
 
     await expect(
       useCase.execute({
-        token: 'signed.jwt.token',
+        session: identity,
         currentPassword: 'WrongPassword@2026',
         newPassword: 'NewPassword@2026',
       }),
@@ -84,7 +72,7 @@ describe('ChangePasswordUseCase', () => {
   it('rejects a new password that does not meet the policy', async () => {
     await expect(
       useCase.execute({
-        token: 'signed.jwt.token',
+        session: identity,
         currentPassword: 'OldPassword@2026',
         newPassword: 'weakpassword',
       }),
@@ -104,36 +92,38 @@ describe('ChangePasswordUseCase', () => {
 
     await expect(
       useCase.execute({
-        token: 'signed.jwt.token',
+        session: identity,
         currentPassword: 'OldPassword@2026',
         newPassword: 'NewPassword@2026',
       }),
     ).rejects.toEqual(expect.objectContaining({ code: 'SESSION_REVOKED' }));
   });
 
-  it('does not continue when session validation fails', async () => {
-    validateSession.validate = vi
+  it('rejects an identity whose session version is stale', async () => {
+    userRepository.findById = vi
       .fn()
-      .mockRejectedValue(new SessionValidationError('TOKEN_EXPIRED'));
+      .mockResolvedValue(
+        User.rehydrate({ ...user.toPersistence(), sessionVersion: 4 }),
+      );
 
     await expect(
       useCase.execute({
-        token: 'expired.jwt.token',
+        session: identity,
         currentPassword: 'OldPassword@2026',
         newPassword: 'NewPassword@2026',
       }),
-    ).rejects.toEqual(expect.objectContaining({ code: 'TOKEN_EXPIRED' }));
+    ).rejects.toEqual(expect.objectContaining({ code: 'SESSION_REVOKED' }));
 
     expect(passwordHasher.verify).not.toHaveBeenCalled();
   });
 
   function createUser(): User {
     return User.rehydrate({
-      id: claims.sub,
+      id: identity.userId,
       fullName: 'Ada Lovelace',
       email: 'ada@example.com',
       passwordHash: 'scrypt$old',
-      sessionVersion: claims.ver,
+      sessionVersion: identity.sessionVersion,
     });
   }
 });
