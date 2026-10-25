@@ -1,11 +1,9 @@
 import {
   Controller,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
-  Inject,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -17,24 +15,18 @@ import {
   ErrorResponseModel,
   SessionResponseModel,
 } from '../openapi/api-models.ts';
-import { VALIDATE_SESSION_USE_CASE } from '../../application/ports/dependency-tokens.ts';
+import { BearerSessionGuard } from './bearer-session.guard.ts';
 import {
-  SessionValidationError,
-  ValidateSessionUseCase,
-} from '../../application/use-cases/validate-session.ts';
-
-const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
+  CurrentSession,
+  type CurrentSessionIdentity,
+} from './current-session.ts';
 
 @Controller('v1/auth')
 @ApiTags('Authentication')
 @ApiBearerAuth('BearerAuth')
 export class GetCurrentSessionController {
-  constructor(
-    @Inject(VALIDATE_SESSION_USE_CASE)
-    private readonly validateSession: ValidateSessionUseCase,
-  ) {}
-
   @Get('session')
+  @UseGuards(BearerSessionGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     operationId: 'getCurrentSession',
@@ -58,24 +50,13 @@ export class GetCurrentSessionController {
     description: 'Unexpected server error.',
     type: ErrorResponseModel,
   })
-  async getCurrentSession(@Headers('authorization') authorization?: string) {
-    if (!authorization) {
-      throw new UnauthorizedException({ code: 'TOKEN_MISSING' });
-    }
-
-    const match = BEARER_PATTERN.exec(authorization);
-    if (!match) {
-      throw new UnauthorizedException({ code: 'TOKEN_INVALID' });
-    }
-
-    try {
-      return await this.validateSession.execute(match[1]);
-    } catch (error) {
-      if (error instanceof SessionValidationError) {
-        throw new UnauthorizedException({ code: error.code });
-      }
-
-      throw error;
-    }
+  async getCurrentSession(@CurrentSession() session: CurrentSessionIdentity) {
+    return {
+      user: {
+        id: session.userId,
+        fullName: session.fullName,
+        email: session.email,
+      },
+    };
   }
 }

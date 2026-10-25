@@ -6,7 +6,11 @@ import type { App } from 'supertest/types';
 import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
 import { createValidationPipe } from '../../src/api/http/validation-pipe.ts';
 import { ChangeMyPasswordController } from '../../src/api/users/change-my-password.controller.ts';
-import { CHANGE_PASSWORD_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
+import { BearerSessionGuard } from '../../src/api/auth/bearer-session.guard.ts';
+import {
+  CHANGE_PASSWORD_USE_CASE,
+  VALIDATE_SESSION_USE_CASE,
+} from '../../src/application/ports/dependency-tokens.ts';
 import {
   ChangePasswordValidationError,
   InvalidCurrentPasswordError,
@@ -16,14 +20,21 @@ import { SessionValidationError } from '../../src/application/use-cases/validate
 describe('PATCH /v1/users/me/password', () => {
   let app: INestApplication<App>;
   const execute = vi.fn();
+  const validate = vi.fn();
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    validate.mockResolvedValue({
+      claims: { sub: 'user-id', ver: 3 },
+      user: { fullName: 'Ada Lovelace', email: 'ada@example.test' },
+    });
 
     const moduleFixture = await Test.createTestingModule({
       controllers: [ChangeMyPasswordController],
       providers: [
+        BearerSessionGuard,
         { provide: CHANGE_PASSWORD_USE_CASE, useValue: { execute } },
+        { provide: VALIDATE_SESSION_USE_CASE, useValue: { validate } },
         { provide: APP_FILTER, useClass: ApiExceptionFilter },
         { provide: APP_PIPE, useFactory: createValidationPipe },
       ],
@@ -51,7 +62,12 @@ describe('PATCH /v1/users/me/password', () => {
       .expect('');
 
     expect(execute).toHaveBeenCalledWith({
-      token: 'signed.jwt.token',
+      session: {
+        userId: 'user-id',
+        sessionVersion: 3,
+        fullName: 'Ada Lovelace',
+        email: 'ada@example.test',
+      },
       currentPassword: 'OldPassword@2026',
       newPassword: 'NewPassword@2026',
     });
@@ -88,7 +104,7 @@ describe('PATCH /v1/users/me/password', () => {
   });
 
   it('maps authentication and current-password failures to 401', async () => {
-    execute.mockRejectedValueOnce(
+    validate.mockRejectedValueOnce(
       new SessionValidationError('SESSION_REVOKED'),
     );
 

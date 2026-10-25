@@ -23,17 +23,18 @@ class InMemoryUserRepository implements UserRepository {
   }
 
   findById(id: string): Promise<User | null> {
-    return Promise.resolve(this.users.get(id) ?? null);
+    const user = this.users.get(id);
+    return Promise.resolve(user ? User.rehydrate(user.toPersistence()) : null);
   }
 
   findByEmail(email: EmailAddress): Promise<User | null> {
-    return Promise.resolve(
-      [...this.users.values()].find((user) => user.email === email.value) ??
-        null,
+    const user = [...this.users.values()].find(
+      (item) => item.email === email.value,
     );
+    return Promise.resolve(user ? User.rehydrate(user.toPersistence()) : null);
   }
 
-  async save(user: User): Promise<void> {
+  async create(user: User): Promise<void> {
     if ([...this.users.values()].some((item) => item.email === user.email)) {
       throw new EmailAlreadyRegisteredError();
     }
@@ -41,27 +42,16 @@ class InMemoryUserRepository implements UserRepository {
     this.users.set(user.id, user);
   }
 
-  async replacePassword(
-    id: string,
-    passwordHash: string,
-    expectedSessionVersion: number,
-  ): Promise<boolean> {
-    const user = this.users.get(id);
-    if (!user || user.sessionVersion !== expectedSessionVersion) {
+  async save(user: User, expectedSessionVersion: number): Promise<boolean> {
+    const existingUser = this.users.get(user.id);
+    if (
+      !existingUser ||
+      existingUser.sessionVersion !== expectedSessionVersion
+    ) {
       return false;
     }
 
-    user.changePasswordHash(passwordHash);
-    return true;
-  }
-
-  async disable(id: string, expectedSessionVersion: number): Promise<boolean> {
-    const user = this.users.get(id);
-    if (!user || user.sessionVersion !== expectedSessionVersion) {
-      return false;
-    }
-
-    user.disable();
+    this.users.set(user.id, user);
     return true;
   }
 }

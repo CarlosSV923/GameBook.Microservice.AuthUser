@@ -1,11 +1,10 @@
 import {
   Controller,
   Delete,
-  Headers,
   HttpCode,
   HttpStatus,
   Inject,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -16,9 +15,11 @@ import {
 import { ErrorResponseModel } from '../openapi/api-models.ts';
 import { DISABLE_ACCOUNT_USE_CASE } from '../../application/ports/dependency-tokens.ts';
 import { DisableAccountUseCase } from '../../application/use-cases/disable-account.ts';
-import { SessionValidationError } from '../../application/use-cases/validate-session.ts';
-
-const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
+import { BearerSessionGuard } from '../auth/bearer-session.guard.ts';
+import {
+  CurrentSession,
+  type CurrentSessionIdentity,
+} from '../auth/current-session.ts';
 
 @Controller('v1/users/me')
 @ApiTags('User')
@@ -30,6 +31,7 @@ export class DisableMyAccountController {
   ) {}
 
   @Delete()
+  @UseGuards(BearerSessionGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     operationId: 'disableMyAccount',
@@ -50,25 +52,8 @@ export class DisableMyAccountController {
     type: ErrorResponseModel,
   })
   async disable(
-    @Headers('authorization') authorization?: string,
+    @CurrentSession() session: CurrentSessionIdentity,
   ): Promise<void> {
-    if (!authorization) {
-      throw new UnauthorizedException({ code: 'TOKEN_MISSING' });
-    }
-
-    const match = BEARER_PATTERN.exec(authorization);
-    if (!match) {
-      throw new UnauthorizedException({ code: 'TOKEN_INVALID' });
-    }
-
-    try {
-      await this.disableAccount.execute(match[1]);
-    } catch (error) {
-      if (error instanceof SessionValidationError) {
-        throw new UnauthorizedException({ code: error.code });
-      }
-
-      throw error;
-    }
+    await this.disableAccount.execute(session);
   }
 }

@@ -19,7 +19,7 @@ export class PrismaUserRepository implements UserRepository {
     return record ? toDomain(record) : null;
   }
 
-  async save(user: User): Promise<void> {
+  async create(user: User): Promise<void> {
     const persistence = user.toPersistence();
 
     try {
@@ -33,32 +33,19 @@ export class PrismaUserRepository implements UserRepository {
     }
   }
 
-  async replacePassword(
-    id: string,
-    passwordHash: string,
-    expectedSessionVersion: number,
-  ): Promise<boolean> {
-    const result = await this.prisma.user.updateMany({
-      where: { id, sessionVersion: expectedSessionVersion },
-      data: {
-        passwordHash,
-        sessionVersion: { increment: 1 },
-      },
-    });
-
-    return result.count === 1;
-  }
-
-  async disable(id: string, expectedSessionVersion: number): Promise<boolean> {
+  async save(user: User, expectedSessionVersion: number): Promise<boolean> {
+    const persistence = user.toPersistence();
     const result = await this.prisma.user.updateMany({
       where: {
-        id,
+        id: user.id,
         sessionVersion: expectedSessionVersion,
-        isDisabled: false,
       },
       data: {
-        isDisabled: true,
-        sessionVersion: { increment: 1 },
+        fullName: persistence.fullName,
+        email: persistence.email,
+        passwordHash: persistence.passwordHash,
+        sessionVersion: persistence.sessionVersion,
+        isDisabled: persistence.isDisabled,
       },
     });
 

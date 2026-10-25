@@ -5,6 +5,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { ApiExceptionFilter } from '../../src/api/http/api-exception.filter.ts';
 import { GetCurrentSessionController } from '../../src/api/auth/get-current-session.controller.ts';
+import { BearerSessionGuard } from '../../src/api/auth/bearer-session.guard.ts';
 import { VALIDATE_SESSION_USE_CASE } from '../../src/application/ports/dependency-tokens.ts';
 import {
   SessionValidationError,
@@ -13,7 +14,7 @@ import {
 
 describe('GET /v1/auth/session', () => {
   let app: INestApplication<App>;
-  const execute = vi.fn();
+  const validate = vi.fn();
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -21,7 +22,8 @@ describe('GET /v1/auth/session', () => {
     const moduleFixture = await Test.createTestingModule({
       controllers: [GetCurrentSessionController],
       providers: [
-        { provide: VALIDATE_SESSION_USE_CASE, useValue: { execute } },
+        BearerSessionGuard,
+        { provide: VALIDATE_SESSION_USE_CASE, useValue: { validate } },
         { provide: APP_FILTER, useClass: ApiExceptionFilter },
       ],
     }).compile();
@@ -35,7 +37,8 @@ describe('GET /v1/auth/session', () => {
   });
 
   it('returns the current public identity for a valid Bearer token', async () => {
-    execute.mockResolvedValue({
+    validate.mockResolvedValue({
+      claims: { sub: '7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa', ver: 3 },
       user: {
         id: '7b7f3d2e-6d8d-4e8c-9e0c-2a96f2fb11aa',
         fullName: 'Ada Lovelace',
@@ -54,7 +57,7 @@ describe('GET /v1/auth/session', () => {
           email: 'ada.lovelace@example.test',
         },
       });
-    expect(execute).toHaveBeenCalledWith('signed.jwt.token');
+    expect(validate).toHaveBeenCalledWith('signed.jwt.token');
   });
 
   it('rejects a missing Authorization header with TOKEN_MISSING', async () => {
@@ -67,7 +70,7 @@ describe('GET /v1/auth/session', () => {
         message: 'Authentication is required.',
         requestId: 'req_session_missing',
       });
-    expect(execute).not.toHaveBeenCalled();
+    expect(validate).not.toHaveBeenCalled();
   });
 
   it('rejects malformed Authorization schemes with TOKEN_INVALID', async () => {
@@ -89,7 +92,7 @@ describe('GET /v1/auth/session', () => {
       .expect((response) => {
         expect(response.body.code).toBe('TOKEN_INVALID');
       });
-    expect(execute).not.toHaveBeenCalled();
+    expect(validate).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -103,7 +106,7 @@ describe('GET /v1/auth/session', () => {
   ])(
     'maps %s session failures to the contractual 401 response',
     async (code, message) => {
-      execute.mockRejectedValue(
+      validate.mockRejectedValue(
         new SessionValidationError(code as SessionValidationErrorCode),
       );
 

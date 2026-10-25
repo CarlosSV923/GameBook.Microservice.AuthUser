@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   Controller,
-  Headers,
   HttpCode,
   HttpStatus,
   Inject,
   Patch,
   UnauthorizedException,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,10 +23,12 @@ import {
   ChangePasswordValidationError,
   InvalidCurrentPasswordError,
 } from '../../application/use-cases/change-password.ts';
-import { SessionValidationError } from '../../application/use-cases/validate-session.ts';
 import { ChangeMyPasswordRequest } from './change-my-password.dto.ts';
-
-const BEARER_PATTERN = /^Bearer\s+(\S+)$/iu;
+import { BearerSessionGuard } from '../auth/bearer-session.guard.ts';
+import {
+  CurrentSession,
+  type CurrentSessionIdentity,
+} from '../auth/current-session.ts';
 
 @Controller('v1/users/me')
 @ApiTags('User')
@@ -38,6 +40,7 @@ export class ChangeMyPasswordController {
   ) {}
 
   @Patch('password')
+  @UseGuards(BearerSessionGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
     operationId: 'changeMyPassword',
@@ -67,29 +70,16 @@ export class ChangeMyPasswordController {
     type: ErrorResponseModel,
   })
   async change(
-    @Headers('authorization') authorization: string | undefined,
+    @CurrentSession() session: CurrentSessionIdentity,
     @Body() request: ChangeMyPasswordRequest,
   ): Promise<void> {
-    if (!authorization) {
-      throw new UnauthorizedException({ code: 'TOKEN_MISSING' });
-    }
-
-    const match = BEARER_PATTERN.exec(authorization);
-    if (!match) {
-      throw new UnauthorizedException({ code: 'TOKEN_INVALID' });
-    }
-
     try {
       await this.changePassword.execute({
-        token: match[1],
+        session,
         currentPassword: request.currentPassword,
         newPassword: request.newPassword,
       });
     } catch (error) {
-      if (error instanceof SessionValidationError) {
-        throw new UnauthorizedException({ code: error.code });
-      }
-
       if (error instanceof InvalidCurrentPasswordError) {
         throw new UnauthorizedException({
           code: 'INVALID_CREDENTIALS',

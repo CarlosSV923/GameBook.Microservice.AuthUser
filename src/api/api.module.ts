@@ -3,6 +3,7 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ChangeMyPasswordController } from './users/change-my-password.controller.ts';
 import { DisableMyAccountController } from './users/disable-my-account.controller.ts';
 import { GetCurrentSessionController } from './auth/get-current-session.controller.ts';
+import { BearerSessionGuard } from './auth/bearer-session.guard.ts';
 import { LoginUserController } from './auth/login-user.controller.ts';
 import { RegisterUserController } from './auth/register-user.controller.ts';
 import { HealthController } from './health/health.controller.ts';
@@ -10,7 +11,7 @@ import { ApiExceptionFilter } from './http/api-exception.filter.ts';
 import { RequestIdMiddleware } from './http/request-id.ts';
 import { RequestLoggingMiddleware } from './http/request-logging.middleware.ts';
 import { createValidationPipe } from './http/validation-pipe.ts';
-import { ApplicationModule } from '../application/application.module.ts';
+import { ApplicationModule } from '../application.module.ts';
 
 @Module({
   imports: [ApplicationModule],
@@ -23,6 +24,7 @@ import { ApplicationModule } from '../application/application.module.ts';
     HealthController,
   ],
   providers: [
+    BearerSessionGuard,
     { provide: APP_FILTER, useClass: ApiExceptionFilter },
     { provide: APP_PIPE, useFactory: createValidationPipe },
   ],
