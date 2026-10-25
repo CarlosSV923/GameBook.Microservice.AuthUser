@@ -11,7 +11,7 @@ import { ApiExceptionFilter } from './http/api-exception.filter.ts';
 import { RequestIdMiddleware } from './http/request-id.ts';
 import { RequestLoggingMiddleware } from './http/request-logging.middleware.ts';
 import { createValidationPipe } from './http/validation-pipe.ts';
-import { ApplicationModule } from '../application/application.module.ts';
+import { ApplicationModule } from '../application.module.ts';
 
 @Module({
   imports: [ApplicationModule],
