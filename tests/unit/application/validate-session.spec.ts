@@ -53,6 +53,17 @@ describe('ValidateSessionUseCase', () => {
     expect(userRepository.findById).toHaveBeenCalledWith(claims.sub);
   });
 
+  it('does not expose the password hash from a validated session', async () => {
+    await expect(useCase.validate('signed.jwt.token')).resolves.toEqual({
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+      },
+      claims,
+    });
+  });
+
   it('maps malformed or tampered tokens to TOKEN_INVALID', async () => {
     jwtVerifier.verify = vi.fn().mockRejectedValue(new JwtVerificationError());
 

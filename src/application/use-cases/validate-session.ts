@@ -4,7 +4,6 @@ import {
   type JwtVerifier,
 } from '../ports/jwt-ports.ts';
 import type { UserRepository } from '../../domain/users/user-repository.ts';
-import type { User } from '../../domain/users/user.ts';
 
 export type SessionValidationErrorCode =
   'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'SESSION_REVOKED' | 'ACCOUNT_DISABLED';
@@ -18,7 +17,11 @@ export interface ValidateSessionOutput {
 }
 
 export interface AuthenticatedSession {
-  readonly user: User;
+  readonly user: {
+    readonly id: string;
+    readonly fullName: string;
+    readonly email: string;
+  };
   readonly claims: JwtClaims;
 }
 
@@ -73,7 +76,11 @@ export class ValidateSessionUseCase {
     }
 
     return {
-      user,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+      },
       claims,
     };
   }

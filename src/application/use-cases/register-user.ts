@@ -70,15 +70,7 @@ export class RegisterUserUseCase {
     const passwordHash = await this.passwordHasher.hash(input.password);
     const user = this.createUser(input, email, passwordHash);
 
-    try {
-      await this.userRepository.create(user);
-    } catch (error) {
-      if (error instanceof EmailAlreadyRegisteredError) {
-        throw error;
-      }
-
-      throw error;
-    }
+    await this.userRepository.create(user);
 
     return {
       user: {

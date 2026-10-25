@@ -10,20 +10,31 @@ import {
   REGISTER_USER_USE_CASE,
   USER_REPOSITORY,
   VALIDATE_SESSION_USE_CASE,
-} from './ports/dependency-tokens.ts';
-import type { JwtSigner, JwtVerifier } from './ports/jwt-ports.ts';
-import type { PasswordHasher } from './ports/password-hasher.ts';
-import type { UserRepository } from '../domain/users/user-repository.ts';
-import { ChangePasswordUseCase } from './use-cases/change-password.ts';
-import { DisableAccountUseCase } from './use-cases/disable-account.ts';
-import { LoginUserUseCase } from './use-cases/login-user.ts';
-import { RegisterUserUseCase } from './use-cases/register-user.ts';
-import { ValidateSessionUseCase } from './use-cases/validate-session.ts';
-import { InfrastructureModule } from '../infrastructure/infrastructure.module.ts';
+} from './application/ports/dependency-tokens.ts';
+import type { AuthTokenSettings } from './application/ports/auth-token-settings.ts';
+import type { JwtSigner, JwtVerifier } from './application/ports/jwt-ports.ts';
+import type { PasswordHasher } from './application/ports/password-hasher.ts';
+import type { UserRepository } from './domain/users/user-repository.ts';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.ts';
+import { DisableAccountUseCase } from './application/use-cases/disable-account.ts';
+import { LoginUserUseCase } from './application/use-cases/login-user.ts';
+import { RegisterUserUseCase } from './application/use-cases/register-user.ts';
+import { ValidateSessionUseCase } from './application/use-cases/validate-session.ts';
+import { InfrastructureModule } from './infrastructure/infrastructure.module.ts';
+
+const AUTH_TOKEN_SETTINGS = Symbol('AUTH_TOKEN_SETTINGS');
 
 @Module({
   imports: [InfrastructureModule],
   providers: [
+    {
+      provide: AUTH_TOKEN_SETTINGS,
+      useFactory: (config: ConfigService): AuthTokenSettings => ({
+        issuer: config.getOrThrow<string>('JWT_ISSUER'),
+        audience: config.getOrThrow<string>('JWT_AUDIENCE'),
+      }),
+      inject: [ConfigService],
+    },
     {
       provide: REGISTER_USER_USE_CASE,
       useFactory: (
@@ -38,16 +49,21 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module.ts
         userRepository: UserRepository,
         passwordHasher: PasswordHasher,
         jwtSigner: JwtSigner,
-        config: ConfigService,
+        tokenSettings: AuthTokenSettings,
       ) =>
         new LoginUserUseCase(
           userRepository,
           passwordHasher,
           jwtSigner,
-          config.getOrThrow<string>('JWT_ISSUER'),
-          config.getOrThrow<string>('JWT_AUDIENCE'),
+          tokenSettings.issuer,
+          tokenSettings.audience,
         ),
-      inject: [USER_REPOSITORY, PASSWORD_HASHER, JWT_SIGNER, ConfigService],
+      inject: [
+        USER_REPOSITORY,
+        PASSWORD_HASHER,
+        JWT_SIGNER,
+        AUTH_TOKEN_SETTINGS,
+      ],
     },
     {
       provide: VALIDATE_SESSION_USE_CASE,
