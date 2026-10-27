@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "locale": "es",
+    "title": "Inicio de sesión y revocación de sesión",
+    "subtitle": "El inicio emite un token RS256 válido y versionado; cambiar la contraseña invalida tokens anteriores",
+    "output": "GameBook.Microservice.AuthUser-sequence-es.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "repository": {
+      "url": "https://github.com/CarlosSV923/GameBook.Microservice.AuthUser",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4144f923c0ba3e1c1ab8331cf23f27f7ad7b1558"
+    }
+  },
+  "participants": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Cliente",
+      "sublabel": "Frontend",
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 9,
+          "label": "consumidor API"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API Auth",
+      "sublabel": "HTTP + guard",
+      "sources": [
+        {
+          "path": "src/api/auth/login-user.controller.ts",
+          "label": "ruta de login"
+        },
+        {
+          "path": "src/api/users/change-my-password.controller.ts",
+          "label": "ruta de contraseña"
+        },
+        {
+          "path": "src/api/auth/bearer-session.guard.ts",
+          "label": "guard"
+        }
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "Aplicación",
+      "sublabel": "Casos de uso",
+      "sources": [
+        {
+          "path": "src/application/use-cases/login-user.ts",
+          "label": "inicio de sesión"
+        },
+        {
+          "path": "src/application/use-cases/change-password.ts",
+          "label": "cambio"
+        },
+        {
+          "path": "src/application/use-cases/validate-session.ts",
+          "label": "validación"
+        }
+      ]
+    },
+    {
+      "id": "crypto",
+      "type": "security",
+      "label": "Cripto",
+      "sublabel": "RS256 + scrypt",
+      "sources": [
+        {
+          "path": "src/infrastructure/cryptography/rsa-jwt.ts",
+          "label": "JWT"
+        },
+        {
+          "path": "src/infrastructure/cryptography/scrypt-password-hasher.ts",
+          "label": "contraseña"
+        }
+      ]
+    },
+    {
+      "id": "repository",
+      "type": "backend",
+      "label": "Repo User",
+      "sublabel": "Persistencia",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/prisma-user-repository.ts",
+          "label": "persistencia"
+        }
+      ]
+    },
+    {
+      "id": "user",
+      "type": "backend",
+      "label": "Agregado User",
+      "sublabel": "Clave + ver",
+      "sources": [
+        {
+          "path": "src/domain/users/user.ts",
+          "label": "mutación de dominio"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "Neon - auth",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/schema.prisma",
+          "label": "esquema auth"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 350,
+      "label": "Inicio de sesión"
+    },
+    {
+      "from": 360,
+      "to": 700,
+      "label": "Cambio de clave revoca"
+    },
+    {
+      "from": 710,
+      "to": 862,
+      "label": "Token anterior rechazado"
+    }
+  ],
+  "messages": [
+    {
+      "id": "login-request",
+      "from": "client",
+      "to": "api",
+      "y": 170,
+      "label": "POST /v1/auth/login",
+      "variant": "emphasis"
+    },
+    {
+      "id": "login-execute",
+      "from": "api",
+      "to": "app",
+      "y": 198,
+      "label": "LoginUserUseCase.execute",
+      "variant": "default"
+    },
+    {
+      "id": "find-user",
+      "from": "app",
+      "to": "repository",
+      "y": 226,
+      "label": "findByEmail",
+      "variant": "default"
+    },
+    {
+      "id": "load-user",
+      "from": "repository",
+      "to": "db",
+      "y": 254,
+      "label": "leer usuario + ver",
+      "variant": "default"
+    },
+    {
+      "id": "user-found",
+      "from": "db",
+      "to": "repository",
+      "y": 282,
+      "label": "registro de usuario",
+      "variant": "return"
+    },
+    {
+      "id": "verify-password",
+      "from": "app",
+      "to": "crypto",
+      "y": 310,
+      "label": "verificar clave; firmar RS256",
+      "variant": "security"
+    },
+    {
+      "id": "login-response",
+      "from": "api",
+      "to": "client",
+      "y": 338,
+      "label": "200 - JWT con ver",
+      "variant": "return"
+    },
+    {
+      "id": "password-request",
+      "from": "client",
+      "to": "api",
+      "y": 378,
+      "label": "PATCH /v1/users/me/password",
+      "variant": "emphasis"
+    },
+    {
+      "id": "guard-validate",
+      "from": "api",
+      "to": "app",
+      "y": 406,
+      "label": "guard -> validar sesión",
+      "variant": "security"
+    },
+    {
+      "id": "verify-old-token",
+      "from": "app",
+      "to": "crypto",
+      "y": 434,
+      "label": "validar firma + claims",
+      "variant": "security"
+    },
+    {
+      "id": "guard-lookup",
+      "from": "app",
+      "to": "repository",
+      "y": 462,
+      "label": "cargar usuario actual",
+      "variant": "default"
+    },
+    {
+      "id": "guard-read",
+      "from": "repository",
+      "to": "db",
+      "y": 490,
+      "label": "leer ver actual",
+      "variant": "default"
+    },
+    {
+      "id": "change-execute",
+      "from": "api",
+      "to": "app",
+      "y": 518,
+      "label": "@CurrentSession -> caso de cambio",
+      "variant": "default"
+    },
+    {
+      "id": "change-user",
+      "from": "app",
+      "to": "repository",
+      "y": 546,
+      "label": "findById para cambio de clave",
+      "variant": "default"
+    },
+    {
+      "id": "password-check-and-hash",
+      "from": "app",
+      "to": "crypto",
+      "y": 574,
+      "label": "verificar clave; generar hash",
+      "variant": "security"
+    },
+    {
+      "id": "aggregate-change",
+      "from": "app",
+      "to": "user",
+      "y": 602,
+      "label": "User.changePassword suma ver",
+      "variant": "emphasis"
+    },
+    {
+      "id": "optimistic-save",
+      "from": "app",
+      "to": "repository",
+      "y": 630,
+      "label": "save(user, expectedVersion)",
+      "variant": "default"
+    },
+    {
+      "id": "persist-change",
+      "from": "repository",
+      "to": "db",
+      "y": 658,
+      "label": "actualizar por id + versión",
+      "variant": "default"
+    },
+    {
+      "id": "password-response",
+      "from": "api",
+      "to": "client",
+      "y": 686,
+      "label": "204 - clave cambiada",
+      "variant": "return"
+    },
+    {
+      "id": "session-request",
+      "from": "client",
+      "to": "api",
+      "y": 730,
+      "label": "GET /v1/auth/session - JWT previo",
+      "variant": "emphasis"
+    },
+    {
+      "id": "session-validate",
+      "from": "api",
+      "to": "app",
+      "y": 758,
+      "label": "guard -> validar sesión",
+      "variant": "security"
+    },
+    {
+      "id": "compare-version",
+      "from": "app",
+      "to": "repository",
+      "y": 786,
+      "label": "comparar ver del JWT y DB",
+      "variant": "default"
+    },
+    {
+      "id": "revoked",
+      "from": "app",
+      "to": "api",
+      "y": 814,
+      "label": "versión distinta -> SESSION_REVOKED",
+      "variant": "return"
+    },
+    {
+      "id": "unauthorized",
+      "from": "api",
+      "to": "client",
+      "y": 842,
+      "label": "401 - JWT previo rechazado",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Regla de revocación",
+      "items": [
+        "El inicio firma sessionVersion actual en el claim JWT ver.",
+        "El cambio de contraseña incrementa la versión del agregado y solo persiste si coincide la versión esperada.",
+        "La validación compara la versión del token con el estado persistido; el token anterior recibe 401."
+      ]
+    }
+  ]
+}

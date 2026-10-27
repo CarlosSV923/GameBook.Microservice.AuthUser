@@ -2,169 +2,263 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Arquitectura de GameBook AuthUser",
+    "locale": "es",
+    "title": "AuthUser: arquitectura implementada",
+    "subtitle": "Límites del servicio, rutas de solicitud y responsabilidades de despliegue actuales",
     "output": "GameBook.Microservice.AuthUser-architecture-es.html",
     "quality_profile": "showcase",
     "repository": {
       "url": "https://github.com/CarlosSV923/GameBook.Microservice.AuthUser",
       "provider": "github",
       "link_mode": "web",
-      "revision": "33a7c6438478ae542c9f8fc36afbf2cad3ff0b49"
-    },
-    "views": [
-      {
-        "id": "request-path",
-        "label": "Ruta de solicitudes de cuenta",
-        "focus": ["frontend", "api", "application", "domain", "prisma", "postgres"],
-        "note": "Sigue las solicitudes de registro, inicio de sesión, sesión, contraseña y desactivación hasta el estado persistente."
-      },
-      {
-        "id": "security",
-        "label": "Autenticación y secretos",
-        "focus": ["api", "jwt", "password", "config", "application"],
-        "note": "Observa cómo las claves JWT, el hash de contraseñas y la configuración de ejecución soportan los casos de uso."
-      },
-      {
-        "id": "operations",
-        "label": "Operación y documentación",
-        "focus": ["frontend", "api", "health", "openapi", "config"],
-        "note": "Inspecciona los puntos de healthcheck y OpenAPI expuestos por el servicio."
-      }
-    ]
+      "revision": "4144f923c0ba3e1c1ab8331cf23f27f7ad7b1558"
+    }
   },
   "components": [
     {
       "id": "frontend",
       "type": "external",
-      "label": "GameBook Frontend",
-      "sublabel": "Cliente Next.js",
-      "pos": [40, 300],
-      "size": [170, 72],
-      "sources": [{ "path": "README.es.md", "label": "consumidor" }]
+      "label": "Frontend de GameBook",
+      "sublabel": "Cliente API Next.js",
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 9,
+          "label": "consumidor"
+        }
+      ],
+      "pos": [40, 145],
+      "size": [170, 84]
+    },
+    {
+      "id": "game",
+      "type": "external",
+      "label": "Servicio Game",
+      "sublabel": "Consume JWT de AuthUser",
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 9,
+          "label": "consumidor de token"
+        }
+      ],
+      "pos": [40, 315],
+      "size": [170, 84]
     },
     {
       "id": "api",
       "type": "backend",
-      "label": "API AuthUser",
-      "sublabel": "Frontera HTTP NestJS",
-      "tag": "/v1 + /docs",
-      "pos": [250, 300],
-      "size": [170, 82],
-      "sources": [{ "path": "src/api/api.module.ts", "label": "rutas" }]
+      "label": "API HTTP",
+      "sublabel": "Rutas y guards de NestJS",
+      "tag": "/v1 · /docs",
+      "sources": [
+        {
+          "path": "src/api/api.module.ts",
+          "label": "controladores"
+        },
+        {
+          "path": "src/api/auth/bearer-session.guard.ts",
+          "label": "guard de sesión"
+        }
+      ],
+      "pos": [260, 225],
+      "size": [170, 84]
     },
     {
       "id": "application",
       "type": "backend",
       "label": "Casos de uso",
-      "sublabel": "Registro · Login · Sesión",
-      "tag": "Contraseña + desactivación",
-      "pos": [460, 300],
-      "size": [190, 82],
-      "sources": [{ "path": "src/application/use-cases/login-user.ts", "label": "orquestación" }]
+      "sublabel": "Orquestación sin framework",
+      "tag": "AuthTokenSettings",
+      "sources": [
+        {
+          "path": "src/application/use-cases/login-user.ts",
+          "label": "inicio de sesión"
+        },
+        {
+          "path": "src/application/use-cases/change-password.ts",
+          "label": "cambio de contraseña"
+        },
+        {
+          "path": "src/application.module.ts",
+          "label": "composición"
+        }
+      ],
+      "pos": [480, 225],
+      "size": [190, 84]
     },
     {
       "id": "domain",
       "type": "backend",
-      "label": "Modelo de dominio",
-      "sublabel": "Usuario · email · políticas",
-      "pos": [690, 300],
-      "size": [170, 82],
-      "sources": [{ "path": "src/domain/users/user.ts", "label": "invariantes" }]
+      "label": "Agregado User",
+      "sublabel": "Gestiona sessionVersion",
+      "sources": [
+        {
+          "path": "src/domain/users/user.ts",
+          "label": "agregado"
+        }
+      ],
+      "pos": [720, 145],
+      "size": [180, 84]
     },
     {
-      "id": "prisma",
+      "id": "repository",
       "type": "backend",
       "label": "Repositorio Prisma",
-      "sublabel": "Adaptador de persistencia",
-      "tag": "esquema auth",
-      "pos": [910, 300],
-      "size": [180, 82],
-      "sources": [{ "path": "src/infrastructure/persistence/prisma/prisma-user-repository.ts", "label": "adaptador" }]
+      "sublabel": "Guardado optimista por versión",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/prisma-user-repository.ts",
+          "label": "guardado condicional"
+        }
+      ],
+      "pos": [720, 305],
+      "size": [190, 84]
     },
     {
-      "id": "postgres",
+      "id": "neon",
       "type": "database",
-      "label": "PostgreSQL",
-      "sublabel": "Neon · esquema auth",
-      "pos": [1130, 300],
-      "size": [170, 82],
-      "sources": [{ "path": "src/infrastructure/persistence/prisma/schema.prisma", "label": "persistencia" }]
+      "label": "Neon PostgreSQL",
+      "sublabel": "Esquema auth · rol runtime",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/schema.prisma",
+          "label": "límite del esquema"
+        },
+        {
+          "path": "README.md",
+          "line": 27,
+          "label": "acceso runtime"
+        }
+      ],
+      "pos": [970, 225],
+      "size": [180, 84]
     },
     {
       "id": "jwt",
       "type": "security",
-      "label": "JWT RS256",
-      "sublabel": "Firma · verificación · sesión",
-      "pos": [460, 120],
-      "size": [190, 76],
-      "sources": [{ "path": "src/infrastructure/cryptography/rsa-jwt.ts", "label": "criptografía" }]
+      "label": "Criptografía JWT",
+      "sublabel": "RS256 · claim ver",
+      "sources": [
+        {
+          "path": "src/infrastructure/cryptography/rsa-jwt.ts",
+          "label": "firma y validación"
+        }
+      ],
+      "pos": [480, 415],
+      "size": [190, 84]
     },
     {
-      "id": "password",
-      "type": "security",
-      "label": "Hash de contraseñas",
-      "sublabel": "Adaptador scrypt",
-      "pos": [690, 120],
-      "size": [170, 76],
-      "sources": [{ "path": "src/infrastructure/cryptography/scrypt-password-hasher.ts", "label": "criptografía" }]
+      "id": "render",
+      "type": "cloud",
+      "label": "Servicio Render",
+      "sublabel": "Runtime de producción",
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 72,
+          "label": "despliegue"
+        }
+      ],
+      "pos": [720, 415],
+      "size": [180, 84]
     },
     {
-      "id": "config",
-      "type": "security",
-      "label": "Configuración de ejecución",
-      "sublabel": "Validación de entorno",
-      "tag": "claves · orígenes · base de datos",
-      "pos": [910, 120],
-      "size": [180, 76],
-      "sources": [{ "path": "src/infrastructure/config/auth-runtime-config.ts", "label": "configuración" }]
-    },
-    {
-      "id": "health",
-      "type": "backend",
-      "label": "Healthcheck",
-      "sublabel": "GET /health → 200",
-      "pos": [250, 510],
-      "size": [170, 72],
-      "sources": [{ "path": "src/api/health/health.controller.ts", "label": "operación" }]
-    },
-    {
-      "id": "openapi",
-      "type": "backend",
-      "label": "OpenAPI / Swagger",
-      "sublabel": "GET /docs · /docs/openapi.json",
-      "pos": [460, 510],
-      "size": [210, 72],
-      "sources": [{ "path": "src/api/openapi/configure-swagger.ts", "label": "documentación" }]
+      "id": "actions",
+      "type": "cloud",
+      "label": "GitHub Actions",
+      "sublabel": "Solo migraciones controladas",
+      "sources": [
+        {
+          "path": ".github/workflows/migrate-auth.yml",
+          "label": "flujo de migración"
+        }
+      ],
+      "pos": [970, 415],
+      "size": [180, 84]
     }
   ],
   "boundaries": [
     {
       "kind": "region",
-      "label": "Servicio GameBook.AuthUser",
-      "wraps": ["api", "application", "domain", "prisma", "jwt", "password", "config", "health", "openapi"],
-      "pad": 28
-    },
-    {
-      "kind": "security-group",
-      "label": "Credenciales privadas de ejecución",
-      "wraps": ["jwt", "password", "config"],
-      "pad": 18
+      "label": "AuthUser · runtime en Render",
+      "wraps": ["api", "application", "domain", "repository", "jwt", "render"],
+      "pad": 24
     }
   ],
   "connections": [
-    { "id": "frontend-api", "from": "frontend", "to": "api", "label": "HTTP + Bearer JWT", "variant": "emphasis", "labelDy": -30 },
-    { "id": "api-application", "from": "api", "to": "application", "label": "comandos validados", "labelDy": -35 },
-    { "id": "application-domain", "from": "application", "to": "domain", "label": "aplicar invariantes", "labelDy": -35 },
-    { "id": "domain-prisma", "from": "domain", "to": "prisma", "label": "puerto de repositorio", "variant": "dashed", "labelDy": -35 },
-    { "id": "prisma-postgres", "from": "prisma", "to": "postgres", "label": "SQL · esquema auth", "labelDy": -35 },
-    { "id": "api-jwt", "from": "api", "to": "jwt", "label": "autenticar / emitir", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": 26 },
-    { "id": "application-password", "from": "application", "to": "password", "label": "hash / verificar", "variant": "security", "fromSide": "top", "toSide": "bottom", "labelDy": 26 },
-    { "id": "api-health", "from": "api", "to": "health", "variant": "dashed", "fromSide": "bottom", "toSide": "top" },
-    { "id": "api-openapi", "from": "api", "to": "openapi", "label": "contrato de API", "variant": "dashed", "fromSide": "bottom", "toSide": "top", "labelDy": 54 }
+    {
+      "id": "frontend-api",
+      "from": "frontend",
+      "to": "api",
+      "label": "HTTP · token Bearer",
+      "variant": "emphasis"
+    },
+    {
+      "id": "game-api",
+      "from": "game",
+      "to": "api",
+      "label": "validación de sesión",
+      "variant": "security"
+    },
+    {
+      "id": "api-app",
+      "from": "api",
+      "to": "application",
+      "label": "solicitud validada"
+    },
+    {
+      "id": "app-domain",
+      "from": "application",
+      "to": "domain",
+      "label": "aplicar comportamiento de usuario"
+    },
+    {
+      "id": "domain-repository",
+      "from": "domain",
+      "to": "repository",
+      "label": "puerto de repositorio",
+      "variant": "dashed"
+    },
+    {
+      "id": "repository-neon",
+      "from": "repository",
+      "to": "neon",
+      "label": "SQL · esquema auth"
+    },
+    {
+      "id": "app-jwt",
+      "from": "application",
+      "to": "jwt",
+      "label": "firmar / validar",
+      "variant": "security"
+    },
+    {
+      "id": "actions-neon",
+      "from": "actions",
+      "to": "neon",
+      "label": "aplicar migraciones · rol migrador",
+      "variant": "dashed"
+    }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Ruta de solicitudes", "items": ["NestJS transforma solicitudes HTTP en casos de uso", "Las reglas de dominio protegen las invariantes de usuario y cuenta", "Prisma persiste usuarios en el esquema auth aislado"] },
-    { "dot": "rose", "title": "Seguridad", "items": ["JWT usa firma y verificación RS256", "Las contraseñas pasan por el adaptador scrypt", "Las claves y la base de datos permanecen en configuración validada"] },
-    { "dot": "emerald", "title": "Operación", "items": ["GET /health devuelve HTTP 200 para healthchecks", "Swagger UI y OpenAPI JSON describen el contrato del servicio"] }
+    {
+      "dot": "emerald",
+      "title": "Ruta de solicitud",
+      "items": [
+        "Los controladores API y BearerSessionGuard viven en api/.",
+        "Los casos de uso sin framework se componen en src/application.module.ts con AuthTokenSettings.",
+        "El agregado User incrementa sessionVersion; el repositorio compara la versión esperada al guardar."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Límites de confianza",
+      "items": [
+        "Render ejecuta el servicio con un rol runtime limitado a auth.",
+        "GitHub Actions aplica migraciones con un rol migrador limitado y separado.",
+        "Los tokens RS256 incluyen la versión de sesión usada para revocar sesiones."
+      ]
+    }
   ]
 }

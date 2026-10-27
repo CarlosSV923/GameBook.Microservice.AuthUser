@@ -20,7 +20,7 @@ AuthUser owns registration, login, current-session validation, password changes,
 
 The repository architecture diagram is available in English and Spanish. The embedded preview uses the validated dark theme; the interactive diagram is published with GitHub Pages.
 
-[![GameBook.Microservice.AuthUser architecture — English](architecture/GameBook.Microservice.AuthUser-architecture-en-dark.png)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
+[![GameBook.Microservice.AuthUser architecture — English](architecture/GameBook.Microservice.AuthUser-architecture-en.svg)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
 
 - [Open the interactive diagram](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
 
