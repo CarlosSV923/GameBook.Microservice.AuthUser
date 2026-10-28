@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Bilingual architecture and request sequence diagrams for GameBook AuthUser."
+    />
+    <title>GameBook AuthUser diagrams</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --page: #f4f1ea;
+        --surface: #fffdf8;
+        --ink: #202b2b;
+        --muted: #52615f;
+        --line: #c9d0c9;
+        --link: #075f58;
+        --focus: #a44c26;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #151b1b;
+          --surface: #202929;
+          --ink: #edf1e9;
+          --muted: #b9c5bf;
+          --line: #455250;
+          --link: #8ed6c8;
+          --focus: #ffad79;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: clamp(1.25rem, 5vw, 4rem);
+        background: var(--page);
+        color: var(--ink);
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 54rem;
+        margin: 0 auto;
+      }
+      h1,
+      h2 {
+        line-height: 1.2;
+      }
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(2rem, 5vw, 3.25rem);
+      }
+      .intro {
+        margin: 0 0 2rem;
+        color: var(--muted);
+      }
+      section {
+        margin: 1.25rem 0;
+        padding: clamp(1rem, 3vw, 1.5rem);
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--surface);
+      }
+      h2 {
+        margin: 0 0 0.7rem;
+        font-size: 1.35rem;
+      }
+      ul {
+        margin: 0;
+        padding-left: 1.3rem;
+      }
+      li + li {
+        margin-top: 0.45rem;
+      }
+      a {
+        color: var(--link);
+        font-weight: 650;
+        text-underline-offset: 0.18em;
+      }
+      a:focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+      footer {
+        margin-top: 2rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>GameBook AuthUser</h1>
+      <p class="intro">
+        Architecture and request flows · Arquitectura y flujos de solicitud
+      </p>
+
+      <section aria-labelledby="en-title" lang="en">
+        <h2 id="en-title">English</h2>
+        <ul>
+          <li>
+            <a href="GameBook.Microservice.AuthUser-architecture-en.html"
+              >Implemented architecture</a
+            >
+          </li>
+          <li>
+            <a href="GameBook.Microservice.AuthUser-sequence-en.html"
+              >Sign-in and session revocation</a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="es-title" lang="es">
+        <h2 id="es-title">Español</h2>
+        <ul>
+          <li>
+            <a href="GameBook.Microservice.AuthUser-architecture-es.html"
+              >Arquitectura implementada</a
+            >
+          </li>
+          <li>
+            <a href="GameBook.Microservice.AuthUser-sequence-es.html"
+              >Inicio de sesión y revocación de sesión</a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <footer>AuthUser diagrams · Diagramas de AuthUser</footer>
+    </main>
+  </body>
+</html>

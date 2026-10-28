@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Sign-in and session revocation",
+    "subtitle": "Login issues a versioned RS256 token; password change invalidates older tokens",
+    "locale": "en",
+    "output": "GameBook.Microservice.AuthUser-sequence-en.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "repository": {
+      "url": "https://github.com/CarlosSV923/GameBook.Microservice.AuthUser",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "4144f923c0ba3e1c1ab8331cf23f27f7ad7b1558"
+    }
+  },
+  "participants": [
+    {
+      "id": "client",
+      "type": "external",
+      "label": "Client",
+      "sublabel": "Frontend",
+      "sources": [
+        {
+          "path": "README.md",
+          "line": 9,
+          "label": "API consumer"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Auth API",
+      "sublabel": "HTTP + guard",
+      "sources": [
+        {
+          "path": "src/api/auth/login-user.controller.ts",
+          "label": "login route"
+        },
+        {
+          "path": "src/api/users/change-my-password.controller.ts",
+          "label": "password route"
+        },
+        {
+          "path": "src/api/auth/bearer-session.guard.ts",
+          "label": "guard"
+        }
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "Application",
+      "sublabel": "Auth use cases",
+      "sources": [
+        {
+          "path": "src/application/use-cases/login-user.ts",
+          "label": "login"
+        },
+        {
+          "path": "src/application/use-cases/change-password.ts",
+          "label": "change"
+        },
+        {
+          "path": "src/application/use-cases/validate-session.ts",
+          "label": "validate"
+        }
+      ]
+    },
+    {
+      "id": "crypto",
+      "type": "security",
+      "label": "Crypto",
+      "sublabel": "RS256 + scrypt",
+      "sources": [
+        {
+          "path": "src/infrastructure/cryptography/rsa-jwt.ts",
+          "label": "JWT"
+        },
+        {
+          "path": "src/infrastructure/cryptography/scrypt-password-hasher.ts",
+          "label": "password"
+        }
+      ]
+    },
+    {
+      "id": "repository",
+      "type": "backend",
+      "label": "User repo",
+      "sublabel": "Persistence",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/prisma-user-repository.ts",
+          "label": "persistence"
+        }
+      ]
+    },
+    {
+      "id": "user",
+      "type": "backend",
+      "label": "User aggregate",
+      "sublabel": "Password + ver",
+      "sources": [
+        {
+          "path": "src/domain/users/user.ts",
+          "label": "domain mutation"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "Neon - auth",
+      "sources": [
+        {
+          "path": "src/infrastructure/persistence/prisma/schema.prisma",
+          "label": "auth schema"
+        }
+      ]
+    }
+  ],
+  "segments": [
+    {
+      "from": 150,
+      "to": 350,
+      "label": "Sign in"
+    },
+    {
+      "from": 360,
+      "to": 700,
+      "label": "Password change revokes"
+    },
+    {
+      "from": 710,
+      "to": 862,
+      "label": "Old token rejected"
+    }
+  ],
+  "messages": [
+    {
+      "id": "login-request",
+      "from": "client",
+      "to": "api",
+      "y": 170,
+      "label": "POST /v1/auth/login",
+      "variant": "emphasis"
+    },
+    {
+      "id": "login-execute",
+      "from": "api",
+      "to": "app",
+      "y": 198,
+      "label": "LoginUserUseCase.execute",
+      "variant": "default"
+    },
+    {
+      "id": "find-user",
+      "from": "app",
+      "to": "repository",
+      "y": 226,
+      "label": "findByEmail",
+      "variant": "default"
+    },
+    {
+      "id": "load-user",
+      "from": "repository",
+      "to": "db",
+      "y": 254,
+      "label": "read user + ver",
+      "variant": "default"
+    },
+    {
+      "id": "user-found",
+      "from": "db",
+      "to": "repository",
+      "y": 282,
+      "label": "user record",
+      "variant": "return"
+    },
+    {
+      "id": "verify-password",
+      "from": "app",
+      "to": "crypto",
+      "y": 310,
+      "label": "check password; sign RS256",
+      "variant": "security"
+    },
+    {
+      "id": "login-response",
+      "from": "api",
+      "to": "client",
+      "y": 338,
+      "label": "200 - JWT with ver",
+      "variant": "return"
+    },
+    {
+      "id": "password-request",
+      "from": "client",
+      "to": "api",
+      "y": 378,
+      "label": "PATCH /v1/users/me/password",
+      "variant": "emphasis"
+    },
+    {
+      "id": "guard-validate",
+      "from": "api",
+      "to": "app",
+      "y": 406,
+      "label": "guard -> validate session",
+      "variant": "security"
+    },
+    {
+      "id": "verify-old-token",
+      "from": "app",
+      "to": "crypto",
+      "y": 434,
+      "label": "verify signature + claims",
+      "variant": "security"
+    },
+    {
+      "id": "guard-lookup",
+      "from": "app",
+      "to": "repository",
+      "y": 462,
+      "label": "load current user",
+      "variant": "default"
+    },
+    {
+      "id": "guard-read",
+      "from": "repository",
+      "to": "db",
+      "y": 490,
+      "label": "read current ver",
+      "variant": "default"
+    },
+    {
+      "id": "change-execute",
+      "from": "api",
+      "to": "app",
+      "y": 518,
+      "label": "@CurrentSession -> change use case",
+      "variant": "default"
+    },
+    {
+      "id": "change-user",
+      "from": "app",
+      "to": "repository",
+      "y": 546,
+      "label": "findById for password change",
+      "variant": "default"
+    },
+    {
+      "id": "password-check-and-hash",
+      "from": "app",
+      "to": "crypto",
+      "y": 574,
+      "label": "check password; hash new",
+      "variant": "security"
+    },
+    {
+      "id": "aggregate-change",
+      "from": "app",
+      "to": "user",
+      "y": 602,
+      "label": "User.changePassword adds ver",
+      "variant": "emphasis"
+    },
+    {
+      "id": "optimistic-save",
+      "from": "app",
+      "to": "repository",
+      "y": 630,
+      "label": "save(user, expectedVersion)",
+      "variant": "default"
+    },
+    {
+      "id": "persist-change",
+      "from": "repository",
+      "to": "db",
+      "y": 658,
+      "label": "update by id + expected version",
+      "variant": "default"
+    },
+    {
+      "id": "password-response",
+      "from": "api",
+      "to": "client",
+      "y": 686,
+      "label": "204 - password changed",
+      "variant": "return"
+    },
+    {
+      "id": "session-request",
+      "from": "client",
+      "to": "api",
+      "y": 730,
+      "label": "GET /v1/auth/session - old JWT",
+      "variant": "emphasis"
+    },
+    {
+      "id": "session-validate",
+      "from": "api",
+      "to": "app",
+      "y": 758,
+      "label": "guard -> validate session",
+      "variant": "security"
+    },
+    {
+      "id": "compare-version",
+      "from": "app",
+      "to": "repository",
+      "y": 786,
+      "label": "compare JWT ver with DB",
+      "variant": "default"
+    },
+    {
+      "id": "revoked",
+      "from": "app",
+      "to": "api",
+      "y": 814,
+      "label": "version mismatch -> SESSION_REVOKED",
+      "variant": "return"
+    },
+    {
+      "id": "unauthorized",
+      "from": "api",
+      "to": "client",
+      "y": 842,
+      "label": "401 - old JWT rejected",
+      "variant": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Revocation rule",
+      "items": [
+        "Login signs the current sessionVersion into JWT claim ver.",
+        "Password change increments the aggregate version and persists only if the expected version still matches.",
+        "Session validation compares the token version with persisted state; the old token then receives 401."
+      ]
+    }
+  ]
+}
