@@ -1,118 +1,60 @@
 # GameBook.Microservice.AuthUser
 
-[Read this README in Spanish](README.es.md)
+[Español](README.es.md) · **Status: active — latest release v0.4.0**
 
-`GameBook.Microservice.AuthUser` is the GameBook account and authentication service. It manages user accounts, credentials, sessions, JWT issuance, and password changes for the portfolio application.
+[![CI](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CarlosSV923/GameBook.Microservice.AuthUser/actions/workflows/ci.yml?query=branch%3Amain)
 
-## Responsibility
+[![GameBook AuthUser architecture](architecture/GameBook.Microservice.AuthUser-architecture-en.svg)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
 
-AuthUser owns registration, login, current-session validation, password changes, JWT signing and session revocation. It persists users in its own PostgreSQL schema through Prisma and publishes an OpenAPI/Swagger contract. JWTs use RS256, expire after one hour, and are consumed by the frontend and Game service.
+GameBook.Microservice.AuthUser manages GameBook accounts and authentication. It stores users in its PostgreSQL schema and issues RS256 JWTs for the frontend and Game service.
 
-## Implemented architecture
+## What it does
 
-- `src/api/` — HTTP controllers, validation, CORS, request IDs, exception mapping, and Swagger/OpenAPI.
-- `src/application/` — use cases, application ports, and dependency tokens.
-- `src/domain/` — user entities, email and password policies, repositories, and domain errors.
-- `src/infrastructure/` — Prisma persistence, cryptography, runtime configuration, and adapters.
-- `src/main.ts` — application bootstrap, HTTP configuration, and documentation setup.
+- Registers accounts and signs users in.
+- Validates the current session and changes the signed-in user's password.
+- Disables the signed-in user's account and revokes its sessions.
+- Exposes health and OpenAPI endpoints.
 
-## AuthUser architecture
+## Live API
 
-The repository architecture diagram is available in English and Spanish. The embedded preview uses the validated dark theme; the interactive diagram is published with GitHub Pages.
+[Swagger UI](https://gamebook-microservice-authuser.onrender.com/docs) · [OpenAPI JSON](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json). The Render free tier may make the first request slow. The [GameBook Frontend](https://gamebook-frontend.vercel.app) is the client.
 
-[![GameBook.Microservice.AuthUser architecture — English](architecture/GameBook.Microservice.AuthUser-architecture-en.svg)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
+## Quick development
 
-- [Open the interactive diagram](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-architecture-en.html)
-
-Runtime database access uses `AUTH_DATABASE_URL`. Prisma migrations use the separate `AUTH_DATABASE_DIRECT_URL` only from controlled migration commands or Actions; migration credentials are not runtime credentials.
-
-## Local setup
-
-Prerequisites:
-
-- Node.js 24 or a compatible LTS version.
-- pnpm 12.4.1 through Corepack.
-- A local test database role and an RS256 private key corresponding to the public key configured in Game.
-
-Install dependencies and generate the Prisma client:
+Requires Node.js 24, pnpm 12.4.1 and a local RS256 key pair (see the development guide).
 
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
 pnpm db:generate
-```
-
-Copy `.env.example` to a private, ignored `.env` file and fill only the local values. The template lists the variable names without values:
-
-```dotenv
-AUTH_DATABASE_URL=
-JWT_PRIVATE_KEY=
-JWT_ISSUER=
-JWT_AUDIENCE=
-CORS_ALLOWED_ORIGINS=
-PORT=
-```
-
-The template also lists `AUTH_DATABASE_DIRECT_URL` as a migration-only variable. Provide it privately only when running Prisma migration commands; it is not a runtime or deployment credential. PEM values may use literal `\n` escapes; the service normalizes them before parsing. Never commit `.env` files, private keys, or database credentials.
-
-Start AuthUser individually:
-
-```bash
+cp .env.example .env
 pnpm start:dev
 ```
 
-AuthUser listens on local port 3001 by default.
+Add private local values to `.env`; run `pnpm test` for unit tests and `pnpm test:e2e` for integration tests. See [Development](docs/development.md) for configuration, migrations, deployment, and quality commands.
 
-## Local Docker image
+## Architecture
 
-The repository includes the production-style `Dockerfile` used by the integration Compose in [GameBook.System](https://github.com/CarlosSV923/GameBook.System). The Compose supplies the local PostgreSQL runtime URL and waits for the database healthcheck; Prisma migrations remain an explicit command documented by the system repository.
+[![Request sequence](architecture/GameBook.Microservice.AuthUser-sequence-en.svg)](https://carlossv923.github.io/GameBook.Microservice.AuthUser/GameBook.Microservice.AuthUser-sequence-en.html)
 
-## Production deployment
+[Interactive diagrams index](https://carlossv923.github.io/GameBook.Microservice.AuthUser/)
 
-AuthUser is deployed on Render. The current public service URL is [`https://gamebook-microservice-authuser.onrender.com`](https://gamebook-microservice-authuser.onrender.com), with Swagger UI at [`/docs`](https://gamebook-microservice-authuser.onrender.com/docs) and the OpenAPI document at [`/docs/openapi.json`](https://gamebook-microservice-authuser.onrender.com/docs/openapi.json). The production frontend is [`https://gamebook-frontend.vercel.app`](https://gamebook-frontend.vercel.app), and the Game service is [`https://gamebook-microservice-game.onrender.com`](https://gamebook-microservice-game.onrender.com).
+The architecture diagram is at the top of this README. The API layer handles HTTP and validation, application use cases coordinate domain rules, and infrastructure adapters provide Prisma persistence and RS256 signing. Registration and login persist or load a user before issuing a token; protected session and account operations validate that token.
 
-Configure these runtime variables in Render without committing their values:
+## Stack and decisions
 
-```dotenv
-AUTH_DATABASE_URL=
-JWT_PRIVATE_KEY=
-JWT_ISSUER=
-JWT_AUDIENCE=
-CORS_ALLOWED_ORIGINS=
-```
-
-`AUTH_DATABASE_DIRECT_URL` is migration-only and remains restricted to controlled Prisma commands and GitHub Actions. It must not be configured in Render.
-
-## Local endpoints
-
-| Resource | URL |
-| --- | --- |
-| Service base URL | `http://localhost:3001` |
-| Swagger UI | `http://localhost:3001/docs` |
-| OpenAPI JSON | `http://localhost:3001/docs/openapi.json` |
-| Frontend | `http://localhost:3000` |
-| Game | `http://localhost:3002` |
-
-Game and the frontend use the AuthUser base URL without the `/v1` suffix. Authenticated calls carry the JWT in `Authorization: Bearer <token>`.
-
-## Tests and quality checks
-
-```bash
-pnpm test
-pnpm test:e2e
-pnpm lint
-pnpm exec tsc --noEmit -p tsconfig.build.json
-pnpm build
-```
-
-## Release and deployment policy
-
-Commits follow Conventional Commits. The `release-please` workflow runs only on `main` pushes or a manual dispatch, uses the manifest files in the repository, and authenticates with the minimum `GITHUB_TOKEN` permissions required to create release pull requests and GitHub releases. The regular CI validates pull requests and `main`; the release commit is validated by CI after the release pull request is merged.
-
-Production deployment is managed through Render. The repository does not contain provider-specific deployment configuration.
+| Technology            | Why                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| NestJS and TypeScript | HTTP application and dependency injection                                                                              |
+| PostgreSQL and Prisma | Persistence in the AuthUser schema                                                                                     |
+| RS256 JWT             | Signed sessions with a session version, so changing the password or disabling the account revokes older tokens at once |
+| Swagger and OpenAPI   | API reference at `/docs` and machine-readable contract                                                                 |
+| Vitest and Oxlint     | Unit/integration tests and type-aware linting                                                                          |
 
 ## Related projects
 
-- [GameBook.Microservice.Game](https://github.com/CarlosSV923/GameBook.Microservice.Game)
-- [GameBook.Frontend](https://github.com/CarlosSV923/GameBook.Frontend)
-- [GameBook.System documentation](https://github.com/CarlosSV923/GameBook.System/blob/main/README.md)
+- [GameBook.System](https://github.com/CarlosSV923/GameBook.System) — system architecture and local integration Compose.
+- [GameBook.Microservice.Game](https://github.com/CarlosSV923/GameBook.Microservice.Game) — stores and serves users' favorite games.
+- [GameBook.Frontend](https://github.com/CarlosSV923/GameBook.Frontend) — web client for account and game features.
+
+Licensed under the [MIT License](LICENSE). © Carlos Sesme Vera.
