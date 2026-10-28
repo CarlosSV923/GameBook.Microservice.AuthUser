@@ -44,9 +44,9 @@ The Prisma CLI configuration reads `AUTH_DATABASE_DIRECT_URL` for migrations and
 
 ## Release and deployment
 
-Feature pull requests target `develop`. After local acceptance, changes are promoted from `develop` to `main`. The [release-please workflow](../.github/workflows/release-please.yml) runs on `main` pushes or manual dispatch, opens a release pull request from Conventional Commits, and publishes the GitHub release and version tag when that release pull request is merged.
+Feature pull requests target `develop` and use **Rebase and merge**, so release-please lists each change once. After local acceptance, changes are promoted from `develop` to `main`. The [release-please workflow](../.github/workflows/release-please.yml) runs on `main` pushes or manual dispatch, opens a release pull request from Conventional Commits, and publishes the GitHub release and version tag when that release pull request is merged.
 
-After each release, the workflow opens a `main` → `develop` sync pull request. Merge it with a merge commit.
+Promotion pull requests from `develop` to `main` and sync pull requests from `main` to `develop` use a merge commit. After each release, the workflow opens a `main` → `develop` sync pull request.
 
 The Render web service deploys from `main`. Swagger UI is exposed at `/docs`, with OpenAPI JSON at `/docs/openapi.json`. The free tier may take time to respond to its first request. Store runtime configuration and the production signing key in Render; do not add deployment secrets to the repository.
 
